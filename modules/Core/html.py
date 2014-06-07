@@ -1,8 +1,20 @@
 from pyh import *
 from . import coretypes as Coretypes
 
-def make_home(items,alert=None):
-  return _make_page(items,alert)
+def make_home(items_map,alert=None):
+
+  # Loop and get each items display
+
+  main = div(cl="row")
+  d = main << div(style="margin-top:5px;")
+
+  for name, items in items_map.iteritems():
+    for item in items:
+      display = item.web_display(item.data)
+      if display:
+        d << _make_card(display)
+
+  return _make_page([main],alert)
 
 def make_subscriptions(subscriptions,alert=None):
 
@@ -81,7 +93,20 @@ def _make_page(divs,alert=None):
 
   data_div = page << div(cl="container")
 
+  if alert:
+    data_div << div(alert,cl="alert alert-info")
+
   if divs:
     map(lambda d: data_div << d, divs)
 
   return page.render()
+
+
+def _make_card(display):
+  main = div(cl="span4")
+  d = main << table(style="background-color:#F5F5F9",
+                    cl="table table-bordered")
+  d = d << tr()
+  d = d << td(display,style="padding:30px")
+
+  return main

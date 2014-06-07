@@ -8,9 +8,10 @@ import logging
 
 CALLBACK_LINK = "/fb_oauth2callback"
 
+
 def get_service_info(userinfo,root_url):
   name = "Facebook"
-  if (userinfo.fb_access_token is None):
+  if (_client(userinfo) is None):
     return Coretypes.Login_service(
             name=name,
             info=Coretypes.Unsubscribed(
@@ -28,6 +29,37 @@ def get_access_token_from_code(code,root_url):
     logging.info(access)
     return access["access_token"]
 
+
+def get_items(params):
+
+    userinfo = params.userinfo
+    client = _client(userinfo)
+    if client is None:
+      return []
+
+    try:
+        news_feed = client.get_connections("me", "home")
+    except facebook.GraphAPIError:
+        logging.error("Failure to get FB news feed:{%s}"
+                        %  (traceback.format_exc()))
+        return []
+
+    cards = []
+    
+    for post in news_feed['data']:
+      if 'picture' in post:
+        post['picture'] = post['picture'].replace("_s.","_n.")
+      cards.append(Coretypes.Timeline_item(
+                creation_time=
+                  dateutil.parser.parse(post["created_time"]),
+                data=post,
+                web_display=_card_display,
+                glass_display=_card_display))
+
+    logging.debug(cards)
+    return cards
+
+
 ############
 ## PRIVATE
 ############
@@ -44,7 +76,24 @@ def _get_redirect_uri(root_url):
     redirect_uri = ("%s%s" % (root_url, CALLBACK_LINK))
     return redirect_uri
 
+def _client(userinfo):
+  if (userinfo.fb_access_token is None):
+    return None
+  else:
+    return facebook.GraphAPI(userinfo.fb_access_token)
 
 
-def _get_client(access_token):
-    return facebook.GraphAPI(access_token)
+from pyh import *
+def _card_display(data):
+
+  if 'picture' not in data:
+    return None
+
+  main = article(cl='photo')
+  d = main << a()
+  d << img(src=data['picture'],width="100%",height="100%")
+
+  if 'link' in data:
+    d.attributes['href'] = data['link']
+
+  return main

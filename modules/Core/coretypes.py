@@ -1,6 +1,21 @@
 from collections import namedtuple
 
+
 Subscribed    = namedtuple('Subscribed', [])
 Unsubscribed  = namedtuple('Unsubscribed',['login_link'])
 Login_service = namedtuple('Login_service',['name','info'])
 
+Location      = namedtuple('Location',['lat','long'])
+
+
+Timeline_search_params = namedtuple('Timeline_search_params', [
+      'userinfo'
+    , 'location',
+])
+
+Timeline_item = namedtuple("Timeline_item", [
+      'creation_time'
+    , 'data'
+    , 'web_display'
+    , 'glass_display'
+])
