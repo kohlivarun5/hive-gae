@@ -7,9 +7,13 @@ import webapp2
 
 # Import all All handler modules
 import Home
+import Oauth
+import Subscriptions
 
 ROUTES = (
     Home.ROUTES
+  + Oauth.ROUTES
+  + Subscriptions.ROUTES
   )
 
 app = webapp2.WSGIApplication(ROUTES)

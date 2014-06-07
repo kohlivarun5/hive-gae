@@ -1,9 +1,11 @@
 import webapp2
-import logging
+
+import Oauth
 
 class Handler(webapp2.RequestHandler):
   """Request Handler for the home endpoint."""
 
+  @Oauth.Util.auth_required
   def get(self):
     """Render the page."""
 
@@ -13,4 +15,4 @@ class Handler(webapp2.RequestHandler):
 ########## PRIVATES ##################
 import Core
 def _render_page(items):
-  return Core.Html.make_page(None)
+  return Core.Html.make_home(None)
