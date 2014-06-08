@@ -1,1 +1,1 @@
-export PYTHONPATH=$PYTHONPATH:./_libs/:./modules/:./web-app/
+export PYTHONPATH=$PYTHONPATH:`pwd`/_libs/:`pwd`/modules/:`pwd`/web-app/
