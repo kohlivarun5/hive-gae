@@ -1,9 +1,11 @@
 import Core
 
 from . import fb as Fb
+from . import ig as Ig
 
 SERVICES = [
-    Fb
+    Fb,
+    Ig
 ]
 
 def get_subscriptions(userinfo,root_url):

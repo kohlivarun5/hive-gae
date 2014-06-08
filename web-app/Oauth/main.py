@@ -27,7 +27,7 @@ class GapiCallbackHandler(webapp2.RequestHandler):
       # TODO: Display error.
       return None
 
-    users_service = Apputil.Service.create_service('oauth2', 'v2', creds)
+    users_service = Apputil.Service.create('oauth2', 'v2', creds)
     # TODO: Check for errors.
     user = users_service.userinfo().get().execute()
     userid = user.get('id')
@@ -58,4 +58,28 @@ class FbCallbackHandler(webapp2.RequestHandler):
     Gae.Userinfo.put(userinfo)
 
     memcache.set(key=userid, value="Subscribed to Facebook!", time=5)
+    self.redirect('/subscriptions')
+
+class IgCallbackHandler(webapp2.RequestHandler):
+  """Callback called by ig authentication"""
+
+  def get(self):
+    """Get the user's oauth info"""
+
+    code = self.request.get("code")
+
+    logging.debug(code)
+    root_url = Apputil.Url.get_root_url(self)
+    access_token = Social.Ig.get_access_token_from_code(code,root_url)
+
+    logging.debug(access_token)
+
+    userid = Core.Session.load_session_userid(self)
+    userinfo = Gae.Userinfo.get(userid)
+    assert userinfo is not None
+
+    userinfo.ig_access_token = access_token
+    Gae.Userinfo.put(userinfo)
+
+    memcache.set(key=userid, value="Subscribed to Instagram!", time=5)
     self.redirect('/subscriptions')
