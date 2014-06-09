@@ -1,6 +1,8 @@
 from pyh import *
 from . import coretypes as Coretypes
 
+import logging
+
 def make_home(items_map,alert=None):
 
   # Loop and get each items display
@@ -14,7 +16,7 @@ def make_home(items_map,alert=None):
       if display:
         d << _make_card(display)
 
-  return _make_page([main],alert)
+  return _make_page(Coretypes.PAGE_TAB.Home,[main],alert)
 
 def make_subscriptions(subscriptions,alert=None):
 
@@ -46,7 +48,7 @@ def make_subscriptions(subscriptions,alert=None):
 
     divs.append(main)
 
-  return _make_page(divs,alert)
+  return _make_page(Coretypes.PAGE_TAB.Subscriptions,divs,alert)
 
 
 def _addJS(tag, *arg):
@@ -58,7 +60,7 @@ def _addCSS(tag, *arg):
     tag += link(media="screen",rel='stylesheet', type='text/css', href=f)
 
 
-def _make_page(divs,alert=None):
+def _make_page(tab,divs,alert=None):
   page = PyH('{Hive}')
 
   page.head << link(rel="shortcut icon", sizes="196x196",
@@ -82,15 +84,41 @@ def _make_page(divs,alert=None):
 
   page.body.attributes["style"] = "background-color:#F1ECDE"
 
-  d = page << div(cl="navbar navbar-inverse navbar-fixed-top")
-  nav_div = ((d << div(cl="navbar-inner")) << div(cl="container"))
+  def _create_tab(name,link,is_active):
+    tab = li(a(name,href=link))
+    if is_active:
+      tab.attributes['cl'] = 'nav nav-tabs'
 
-  nav_div << a((b("{Hive}") + " : " + i("Your social hub")),
-               cl="brand", href="/",style="padding-right:1cm;")
+    tab << a(name,href=link)
+    return tab
 
-  nav_div << div(a("Subscriptions",
-                 cl="brand navbar-form right", href="/subscriptions"))
 
+  def _make_navbar():
+    main = div(cl="navbar navbar-inverse navbar-fixed-top",role='navigation')
+    navbar = ((main << div(cl="navbar-inner")) << div(cl="container-fluid"))
+    navbar << a((b("{Hive}") + " : " + i("Your social hub")),
+                 cl="brand", href="/",style="padding-right:1cm;")
+  
+    navbar << div(a("Subscriptions",
+                    cl="brand navbar-form right", href="/subscriptions"))
+
+    return main
+  
+  #def _make_navbar_2():
+  #  main = div(cl="navbar navbar-inverse navbar-fixed-top")
+  #  navbar = main << div(cl="container")
+  #  brand  = navbar << div(cl="navbar navbar-header")
+  #  brand << a((b("{Hive}") + " : " + i("Your social hub")),
+  #             cl="navbar navbar-brand", href="#",style="padding-right:1cm;")
+
+  #  tabs = navbar << div(cl="navbar")
+  #  tabs = tabs << ul(cl="nav navbar-nav",id="bs-example-navbar-collapse-1")
+  #  tabs << li(a("Home",href="/"),cl="active")
+  #  tabs << li(a("Subscriptions",href="/subscriptions"),cl="active")
+
+  #  return main
+
+  page << _make_navbar()
   data_div = page << div(cl="container")
 
   if alert:
@@ -108,8 +136,15 @@ def make_web_card(params):
 
     main = article(cl='photo')
     d = main << a()
-    d << img(src=params.photo,width="100%",height="100%")
 
+    if params.poster:
+        d2 = d << p()
+        d2 = d2 << a(b(params.poster))
+        if params.poster_link:
+            d2.attributes['href'] = params.poster_link
+
+
+    d << img(src=params.photo,width="100%",height="100%")
     if params.post_link:
         d.attributes['href'] = params.post_link
 

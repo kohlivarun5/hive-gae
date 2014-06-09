@@ -5,7 +5,7 @@ from Core import Coretypes
 
 import dateutil.parser
 import logging
-
+import traceback
 
 CALLBACK_LINK = "/fb_oauth2callback"
 
@@ -86,9 +86,14 @@ def _client(userinfo):
 
 def _card_display(data):
 
+    poster_info = data['from']
+
+    poster = poster_info['name'].encode('ascii', 'xmlcharrefreplace')
+    poster_link = "http://www.facebook.com/" + poster_info['id']
+
     return Core.Html.make_web_card(Coretypes.Web_card_params(
-        poster=None,
-        poster_link=None,
+        poster=poster,
+        poster_link=poster_link,
         post_link=(data['link'] if 'link' in data else None),
         photo=(data['picture'] if 'picture' in data else None)
     ))

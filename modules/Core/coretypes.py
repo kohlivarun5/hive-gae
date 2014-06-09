@@ -26,3 +26,15 @@ Web_card_params = namedtuple("Web_card_params",[
     , 'post_link'
     , 'photo'
 ])
+
+##############
+## ENUMS
+##############
+
+def _enum(*sequential, **named):
+    enums = dict(zip(sequential, range(len(sequential))), **named)
+    reverse = dict((value, key) for key, value in enums.iteritems())
+    enums['reverse_mapping'] = reverse
+    return type('Enum', (), enums)
+
+PAGE_TAB = _enum("Home","Subscriptions")

@@ -80,14 +80,17 @@ def _client(userinfo):
   if (userinfo.ig_access_token is None):
     return None
   else:
-    logging.info(userinfo.ig_access_token)
     return client.InstagramAPI(access_token=userinfo.ig_access_token)
 
 def _card_display(data):
 
+    poster = data.user.username.encode('ascii', 'xmlcharrefreplace')
+    poster_link = "http://www.instagram.com/" + poster
+
+
     return Core.Html.make_web_card(Coretypes.Web_card_params(
-        poster=None,
-        poster_link=None,
+        poster=poster,
+        poster_link=poster_link,
         post_link=data.link,
         photo=data.get_standard_resolution_url()
     ))
