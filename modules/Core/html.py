@@ -144,9 +144,9 @@ def make_web_card(params):
             d2.attributes['href'] = params.poster_link
 
 
-    d << img(src=params.photo,width="100%",height="100%")
+    d1 = d << a(img(src=params.photo,width="100%",height="100%"))
     if params.post_link:
-        d.attributes['href'] = params.post_link
+        d1.attributes['href'] = params.post_link
 
     return main
 
