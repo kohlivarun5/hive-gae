@@ -6,8 +6,8 @@ from . import ig as Ig
 import logging
 
 SERVICES = [
-    Fb,
-    Ig
+    Ig,
+    Fb
 ]
 
 def get_subscriptions(userinfo,root_url):
@@ -17,6 +17,9 @@ def get_subscriptions(userinfo,root_url):
         service.get_service_info(userinfo,root_url),
       SERVICES)
 
+
+
+from collections import OrderedDict
 def get_timeline_items(userinfo,root_url):
 
     items_map = {}
@@ -31,8 +34,15 @@ def get_timeline_items(userinfo,root_url):
  
     results = Core.MtMapper.do(get,SERVICES)
 
+    items_map = {}
     for (name,items) in results:
-        if len(items) > 0:
-            items_map[name] = items
+        for item in items:
+            items_map[item.creation_time] = item
 
-    return items_map
+    od = OrderedDict(sorted(items_map.items()))
+    items = []
+    for _, v in od.iteritems():
+        items.append(v)
+
+    items.reverse()
+    return items 

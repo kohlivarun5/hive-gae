@@ -3,15 +3,14 @@ from . import coretypes as Coretypes
 
 import logging
 
-def make_home(items_map,alert=None):
+def make_home(items,alert=None):
 
   # Loop and get each items display
 
   main = div(cl="row")
   d = main << div(style="margin-top:5px;")
 
-  for name, items in items_map.iteritems():
-    for item in items:
+  for item in items:
       display = item.web_display(item.data)
       if display:
         d << _make_card(display)
