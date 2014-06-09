@@ -1,5 +1,6 @@
 import facebook
 
+import Core
 from Core import Coretypes
 
 import dateutil.parser
@@ -83,17 +84,11 @@ def _client(userinfo):
     return facebook.GraphAPI(userinfo.fb_access_token)
 
 
-from pyh import *
 def _card_display(data):
 
-  if 'picture' not in data:
-    return None
-
-  main = article(cl='photo')
-  d = main << a()
-  d << img(src=data['picture'],width="100%",height="100%")
-
-  if 'link' in data:
-    d.attributes['href'] = data['link']
-
-  return main
+    return Core.Html.make_web_card(Coretypes.Web_card_params(
+        poster=None,
+        poster_link=None,
+        post_link=(data['link'] if 'link' in data else None),
+        photo=(data['picture'] if 'picture' in data else None)
+    ))

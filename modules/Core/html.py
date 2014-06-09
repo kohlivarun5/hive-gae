@@ -101,6 +101,20 @@ def _make_page(divs,alert=None):
 
   return page.render()
 
+def make_web_card(params):
+
+    if params is None or params.photo is None:
+        return None
+
+    main = article(cl='photo')
+    d = main << a()
+    d << img(src=params.photo,width="100%",height="100%")
+
+    if params.post_link:
+        d.attributes['href'] = params.post_link
+
+    return main
+
 
 def _make_card(display):
   main = div(cl="span4")

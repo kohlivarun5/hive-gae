@@ -1,5 +1,6 @@
 from instagram import client, subscriptions
 
+import Core
 from Core import Coretypes
 
 import pytz
@@ -82,14 +83,11 @@ def _client(userinfo):
     logging.info(userinfo.ig_access_token)
     return client.InstagramAPI(access_token=userinfo.ig_access_token)
 
-
-from pyh import *
 def _card_display(data):
 
-  main = article(cl='photo')
-  d = main << a()
-  d << img(src=data.get_standard_resolution_url(),
-           width="100%",height="100%")
-
-  d.attributes['href'] = data.link
-  return main
+    return Core.Html.make_web_card(Coretypes.Web_card_params(
+        poster=None,
+        poster_link=None,
+        post_link=data.link,
+        photo=data.get_standard_resolution_url()
+    ))

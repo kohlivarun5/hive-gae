@@ -19,3 +19,10 @@ Timeline_item = namedtuple("Timeline_item", [
     , 'web_display'
     , 'glass_display'
 ])
+
+Web_card_params = namedtuple("Web_card_params",[
+      'poster'
+    , 'poster_link'
+    , 'post_link'
+    , 'photo'
+])
