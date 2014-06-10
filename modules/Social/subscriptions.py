@@ -1,9 +1,7 @@
 import Core
 
-from . import fb as Fb
-from . import ig as Ig
-
-import logging
+from Social import fb as Fb
+from Social import ig as Ig
 
 SERVICES = [
     Ig,

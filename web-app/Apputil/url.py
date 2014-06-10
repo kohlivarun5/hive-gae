@@ -1,5 +1,4 @@
 from urlparse import urlparse
-import logging
 
 def get_root_url(request_handler):
   pr = urlparse(request_handler.request.url)

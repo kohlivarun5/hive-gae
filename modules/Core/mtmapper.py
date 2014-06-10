@@ -16,13 +16,13 @@ def do(f,inputs,min_threads=4):
     q = Queue()
     o = Queue()
 
-    for i in range(num_threads):
+    for _ in range(num_threads):
       worker = Thread(target=_exec_solo, args=(f,q,o))
       worker.setDaemon(True)
       worker.start()
 
-    for input in inputs:
-      q.put(input)
+    for i in inputs:
+      q.put(i)
     
     q.join()
 

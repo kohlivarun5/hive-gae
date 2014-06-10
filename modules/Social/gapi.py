@@ -1,19 +1,21 @@
-import logging
+import Core
+
 from oauth2client.client import flow_from_clientsecrets
 
 CALLBACK_LINK = "/oauth2callback"
 
 def get_service_info(userinfo,root_url):
   name = "Google Glass"
-  if (userInfo.credentials is None):
-    return Coretypes.Login_service(
+  if (userinfo.credentials is None):
+    return Core.Coretypes.Login_service(
             name=name,
-            info=Coretypes.Unsubscribed(
-              login_link=(_get_auth_uri(root_url))
+            info=Core.Coretypes.Unsubscribed(
+              login_link=(get_redirect_uri(root_url))
               )
            )
   else:
-    return Login_service(name=name, info=Subscribed())
+    return Core.Coretypes.Login_service(
+                name=name, info=Core.Coretypes.Subscribed())
 
 def get_auth_flow(root_url):
   """Create OAuth2.0 flow controller."""
@@ -26,7 +28,9 @@ def get_auth_flow(root_url):
 
 def get_redirect_uri(root_url,is_prompt=True):
   flow = _get_auth_flow(root_url)
-  flow.params['approval_prompt'] = 'force'
+
+  if is_prompt:
+    flow.params['approval_prompt'] = 'force'
   uri = flow.step1_get_authorize_url()
   # Perform the redirect.
   return str(uri)

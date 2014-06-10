@@ -1,7 +1,6 @@
 from instagram import client, subscriptions
 
 import Core
-from Core import Coretypes
 
 import pytz
 
@@ -12,19 +11,18 @@ CALLBACK_LINK = "/ig_oauth2callback"
 def get_service_info(userinfo,root_url):
   name = "Instagram"
   if (_client(userinfo) is None):
-    return Coretypes.Login_service(
+    return Core.Coretypes.Login_service(
             name=name,
-            info=Coretypes.Unsubscribed(
+            info=Core.Coretypes.Unsubscribed(
               login_link=(_get_auth_uri(root_url))
               )
            )
   else:
-    return Coretypes.Login_service(name=name, info=Coretypes.Subscribed())
+    return Core.Coretypes.Login_service(name=name, info=Core.Coretypes.Subscribed())
 
 def get_access_token_from_code(code,root_url):
     logging.debug("Getting FB info")
     access,_ = _get_auth(root_url).exchange_code_for_access_token(code)
-    access = access
     logging.info(access)
     return access
 
@@ -38,11 +36,11 @@ def get_items(params):
 
   logging.info(client)
 
-  media_feed, next = client.user_media_feed()
+  media_feed, _ = client.user_media_feed()
 
   cards = []
   for media in media_feed:
-    cards.append(Coretypes.Timeline_item(
+    cards.append(Core.Coretypes.Timeline_item(
       creation_time=
         pytz.utc.localize(media.created_time),
       data=media,
@@ -88,7 +86,7 @@ def _card_display(data):
     poster_link = "http://www.instagram.com/" + poster
 
 
-    return Core.Html.make_web_card(Coretypes.Web_card_params(
+    return Core.Html.make_web_card(Core.Coretypes.Web_card_params(
         poster=poster,
         poster_link=poster_link,
         post_link=data.link,

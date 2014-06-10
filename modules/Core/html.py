@@ -1,5 +1,5 @@
 from pyh import *
-from . import coretypes as Coretypes
+from Core import coretypes as Coretypes
 
 import logging
 

@@ -1,4 +1,4 @@
-from . import html as Html
-from . import coretypes as Coretypes
-from . import session as Session
-from . import mtmapper as MtMapper
+from Core import html as Html
+from Core import coretypes as Coretypes
+from Core import session as Session
+from Core import mtmapper as MtMapper

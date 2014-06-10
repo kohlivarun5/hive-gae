@@ -1,5 +1,5 @@
-from . import main as Main
-from . import util as Util
+from Oauth import main as Main
+from Oauth import util as Util
 
 import Social
 
