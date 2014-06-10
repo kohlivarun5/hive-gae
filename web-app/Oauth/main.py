@@ -34,7 +34,21 @@ class GapiCallbackHandler(webapp2.RequestHandler):
 
     Gae.Userinfo.put_credentials(userid,creds)
     Core.Session.store_userid(self, userid)
-    self.redirect('/subscriptions')
+
+    userinfo = Gae.Userinfo.get(userid)
+
+    # Decide what to show based on subscriptions
+    subscriptions = Social.Subscriptions.get_subscriptions(userinfo,root_url)
+    is_new_user = True
+    for sub in subscriptions:
+        if type(sub.info) is Coretypes.Subscribed:
+            is_new_user=False
+            break
+
+    if is_new_user:
+        self.redirect('/subscriptions')
+    else:
+        self.redirect('/')
 
 class FbCallbackHandler(webapp2.RequestHandler):
   """Callback called by fb authentication"""

@@ -94,5 +94,7 @@ def _card_display(data):
         poster=poster,
         poster_link=poster_link,
         post_link=(data['link'] if 'link' in data else None),
-        photo=(data['picture'] if 'picture' in data else None)
+        photo=(data['picture'] if 'picture' in data else None),
+        text=(data['message'].encode('ascii', 'xmlcharrefreplace')
+                if 'message' in data else None)
     ))

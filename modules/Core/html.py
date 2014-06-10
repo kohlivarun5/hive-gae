@@ -49,7 +49,43 @@ def make_subscriptions(subscriptions,alert=None):
 
   return _make_page(Coretypes.PAGE_TAB.Subscriptions,divs,alert)
 
+def make_web_card(params):
 
+    if params is None or params.photo is None:
+        return None
+
+    main = article(cl='photo')
+    d = main << a()
+
+    if params.poster:
+        d2 = d << p()
+        d2 = d2 << a(b(params.poster))
+        if params.poster_link:
+            d2.attributes['href'] = params.poster_link
+
+    d = d << table(style="background-color:#F6F7F8",
+                   cl="table table-bordered")
+
+    if params.text:
+        d = d << tr()
+        d = d << td()
+
+        d1 = d << p(params.text,
+                style="font-size:115%;\
+                       font-family:monospace;\
+                       color:#657b83;\
+                       padding:10px")
+
+    d1 = d << a(img(src=params.photo,width="100%",height="100%"))
+    if params.post_link:
+        d1.attributes['href'] = params.post_link
+
+    return main
+
+
+###################################
+## PRIVATES
+##################################
 def _addJS(tag, *arg):
   for f in arg: 
     tag += script(src=f)
@@ -128,26 +164,6 @@ def _make_page(tab,divs,alert=None):
 
   return page.render()
 
-def make_web_card(params):
-
-    if params is None or params.photo is None:
-        return None
-
-    main = article(cl='photo')
-    d = main << a()
-
-    if params.poster:
-        d2 = d << p()
-        d2 = d2 << a(b(params.poster))
-        if params.poster_link:
-            d2.attributes['href'] = params.poster_link
-
-
-    d1 = d << a(img(src=params.photo,width="100%",height="100%"))
-    if params.post_link:
-        d1.attributes['href'] = params.post_link
-
-    return main
 
 
 def _make_card(display):
@@ -155,6 +171,6 @@ def _make_card(display):
   d = main << table(style="background-color:#F5F5F9",
                     cl="table table-bordered")
   d = d << tr()
-  d = d << td(display,style="padding:30px")
+  d = d << td(display,style="padding:20px")
 
   return main

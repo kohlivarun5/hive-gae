@@ -90,5 +90,7 @@ def _card_display(data):
         poster=poster,
         poster_link=poster_link,
         post_link=data.link,
-        photo=data.get_standard_resolution_url()
+        photo=data.get_standard_resolution_url(),
+        text=(data.caption.text.encode('ascii', 'xmlcharrefreplace') 
+                if data.caption else None)
     ))
