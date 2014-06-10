@@ -26,6 +26,7 @@ Web_card_params = namedtuple("Web_card_params",[
     , 'post_link'
     , 'photo'
     , 'text'
+    , 'logo'
 ])
 
 ##############

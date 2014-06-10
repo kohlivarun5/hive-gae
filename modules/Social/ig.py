@@ -87,6 +87,7 @@ def _card_display(data):
 
 
     return Core.Html.make_web_card(Core.Coretypes.Web_card_params(
+        logo="/static/images/Instagram_Icon_Large.png",
         poster=poster,
         poster_link=poster_link,
         post_link=data.link,

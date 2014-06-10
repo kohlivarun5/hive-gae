@@ -57,15 +57,20 @@ def make_web_card(params):
     main = article(cl='photo')
     d = main << a()
 
+
     if params.poster:
-        d2 = d << p()
-        d2 = d2 << a(b(params.poster))
+        d1 = d << p()
+
+        d2 = d1 << a(b(params.poster))
         if params.poster_link:
             d2.attributes['href'] = params.poster_link
 
+        if params.logo:
+            d2 << img(style="padding-right:3px;",
+                      src=params.logo,width="20",height="20",align="right")
+
     d = d << table(style="table-layout:fixed;background-color:#F6F7F8",
                    cl="table table-bordered")
-
 
     d2 = a(img(src=params.photo,width="100%",height="100%"))
     if params.post_link:

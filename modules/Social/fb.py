@@ -91,6 +91,7 @@ def _card_display(data):
     poster_link = "http://www.facebook.com/" + poster_info['id']
 
     return Core.Html.make_web_card(Core.Coretypes.Web_card_params(
+        logo="/static/images/FB-f-Logo__blue_29.png",
         poster=poster,
         poster_link=poster_link,
         post_link=(data['link'] if 'link' in data else None),
