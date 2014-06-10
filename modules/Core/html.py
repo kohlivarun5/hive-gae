@@ -63,23 +63,28 @@ def make_web_card(params):
         if params.poster_link:
             d2.attributes['href'] = params.poster_link
 
-    d = d << table(style="background-color:#F6F7F8",
+    d = d << table(style="table-layout:fixed;background-color:#F6F7F8",
                    cl="table table-bordered")
 
-    if params.text:
-        d = d << tr()
-        d = d << td()
 
-        d1 = d << p(params.text,
-                style="font-size:115%;\
+    d2 = a(img(src=params.photo,width="100%",height="100%"))
+    if params.post_link:
+        d2.attributes['href'] = params.post_link
+
+    d << tr(td(d2))
+
+    if params.text:
+        d1 = d << tr()
+        d1 = d1 << td()
+
+        d1 = d1 << p(params.text,
+                style="word-wrap:break-word;\
+                       font-size:110%;\
                        font-family:monospace;\
                        color:#657b83;\
-                       padding:10px")
+                       padding:5px")
 
-    d1 = d << a(img(src=params.photo,width="100%",height="100%"))
-    if params.post_link:
-        d1.attributes['href'] = params.post_link
-
+    
     return main
 
 
