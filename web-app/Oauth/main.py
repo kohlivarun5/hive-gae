@@ -41,7 +41,7 @@ class GapiCallbackHandler(webapp2.RequestHandler):
     subscriptions = Social.Subscriptions.get_subscriptions(userinfo,root_url)
     is_new_user = True
     for sub in subscriptions:
-        if type(sub.info) is Coretypes.Subscribed:
+        if type(sub.info) is Core.Coretypes.Subscribed:
             is_new_user=False
             break
 
