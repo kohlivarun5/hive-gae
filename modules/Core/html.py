@@ -49,6 +49,43 @@ def make_subscriptions(subscriptions,alert=None):
 
   return _make_page(Coretypes.PAGE_TAB.Subscriptions,divs,alert)
 
+_MAX_TEXT_LENGTH = 70 #Unix !
+_ELIPSES = " ..."
+
+def _format_text(text):
+    if len(text) <= _MAX_TEXT_LENGTH:
+        return text
+
+    # Text is greater than length, first we split words, then traverse
+    # THe first word do exceed limit is dropped and we put elipses and return!
+    words = text.split()
+    text = ""
+    for word in words:
+        word_len = len(word)
+        text_len = len(text)
+        if (word_len + text_len) > _MAX_TEXT_LENGTH:
+            return text + _ELIPSES
+        else:
+            text = text + " " + word
+    return text
+
+def _make_activities(activities):
+    
+    main = div(style="font-size:78%;padding-right:5px;",
+               align="right")
+
+    for activity in activities:
+        d = main # << a()
+        d << img(activity.count,width="20",height="20",
+                 style="padding-right:2px;",
+                 src=activity.icon)
+        d << b(activity.count,style="vertical-align:middle;color:#073642")
+
+    #    if activity.link:
+    #        d.attributes['href'] = activity.link
+
+    return main
+
 def make_web_card(params):
 
     if params is None or params.photo is None:
@@ -57,7 +94,6 @@ def make_web_card(params):
     main = article(cl='photo')
     d = main << a()
 
-
     if params.poster:
         d1 = d << p()
 
@@ -65,31 +101,39 @@ def make_web_card(params):
         if params.poster_link:
             d2.attributes['href'] = params.poster_link
 
-        if params.logo:
-            d2 << img(style="padding-right:3px;",
-                      src=params.logo,width="20",height="20",align="right")
+       
+    d = d << table(cl="table table-bordered",
+                    style="\
+                    table-layout:fixed;\
+                    background-color:#F6F7F8;\
+                    margin-bottom:10px;\
+                    ",
+                   )
 
-    d = d << table(style="table-layout:fixed;background-color:#F6F7F8",
-                   cl="table table-bordered")
+    if params.text:
+        d1 = d << tr()
+        d1 = d1 << td(style="padding:3px 5px 2px 5px")
+
+        d1 = d1 << p(_format_text(params.text),
+                style="margin:2px;word-wrap:break-word;\
+                       font-size:110%;\
+                       font-family:monospace;\
+                       color:#657b83;\
+                       padding:2px")
 
     d2 = a(img(src=params.photo,width="100%",height="100%"))
     if params.post_link:
         d2.attributes['href'] = params.post_link
 
     d << tr(td(d2))
-
-    if params.text:
-        d1 = d << tr()
-        d1 = d1 << td()
-
-        d1 = d1 << p(params.text,
-                style="word-wrap:break-word;\
-                       font-size:110%;\
-                       font-family:monospace;\
-                       color:#657b83;\
-                       padding:5px")
-
     
+    if params.logo:
+        main << img(style="padding-left:5px;",
+                      src=params.logo,width="20",height="20",align="left")
+    
+    if params.activities and len(params.activities) > 0 :
+        main << _make_activities(params.activities)
+
     return main
 
 
@@ -102,7 +146,7 @@ def _addJS(tag, *arg):
 
 def _addCSS(tag, *arg):
   for f in arg:
-    tag += link(media="screen",rel='stylesheet', type='text/css', href=f)
+    tag += link(rel='stylesheet', type='text/css', href=f)
 
 
 def _make_page(tab,divs,alert=None):

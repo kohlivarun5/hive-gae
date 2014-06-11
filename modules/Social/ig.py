@@ -80,6 +80,16 @@ def _client(userinfo):
   else:
     return client.InstagramAPI(access_token=userinfo.ig_access_token)
 
+def _get_activities(data):
+    activities = []
+    activities.append(
+            Core.Coretypes.Item_activity(
+            count=data.like_count,
+            icon="/static/images/glyph-heart-pop.png",
+            link=None))
+
+    return activities
+
 def _card_display(data):
 
     poster = data.user.username.encode('ascii', 'xmlcharrefreplace')
@@ -93,5 +103,6 @@ def _card_display(data):
         post_link=data.link,
         photo=data.get_standard_resolution_url(),
         text=(data.caption.text.encode('ascii', 'xmlcharrefreplace') 
-                if data.caption else None)
+                if data.caption else None),
+        activities=_get_activities(data)
     ))

@@ -38,7 +38,18 @@ def get_items(params):
       return []
 
     try:
-        news_feed = client.get_connections("me", "home")
+        news_feed = client.get_connections("me", "home",**{
+                'fields' : 
+                ",".join([
+                'from',
+                'link',
+                'picture',
+                'message',
+                'actions',
+                'likes.limit(1).summary(true)',
+                'comments.limit(1).summary(true)'
+                ])
+            })
     except facebook.GraphAPIError:
         logging.error("Failure to get FB news feed:{%s}"
                         %  (traceback.format_exc()))
@@ -82,6 +93,32 @@ def _client(userinfo):
   else:
     return facebook.GraphAPI(userinfo.fb_access_token)
 
+def _get_activities(data):
+    
+    likes_link = None
+    comment_link = None
+
+    if 'actions' in data:
+        for action in data['actions']:
+            if action['name'] == 'Like':
+                likes_link = action['link']
+
+            if action['name'] == 'Comment':
+                comment_link = action['link']
+
+
+    activities = []
+
+    if 'likes' in data and 'summary' in data['likes']:
+        activities.append(
+            Core.Coretypes.Item_activity(
+            count=data['likes']['summary']['total_count'],
+            icon="/static/images/FB-ThumbsUp_29.png",
+            link=likes_link))
+
+
+
+    return activities
 
 def _card_display(data):
 
@@ -97,5 +134,6 @@ def _card_display(data):
         post_link=(data['link'] if 'link' in data else None),
         photo=(data['picture'] if 'picture' in data else None),
         text=(data['message'].encode('ascii', 'xmlcharrefreplace')
-                if 'message' in data else None)
+                if 'message' in data else None),
+        activities=_get_activities(data)
     ))

@@ -20,6 +20,12 @@ Timeline_item = namedtuple("Timeline_item", [
     , 'glass_display'
 ])
 
+Item_activity = namedtuple("Item_activity", [
+      'count'
+    , 'icon'
+    , 'link'
+])
+
 Web_card_params = namedtuple("Web_card_params",[
       'poster'
     , 'poster_link'
@@ -27,6 +33,7 @@ Web_card_params = namedtuple("Web_card_params",[
     , 'photo'
     , 'text'
     , 'logo'
+    , 'activities'
 ])
 
 ##############
