@@ -23,6 +23,7 @@ Timeline_item = namedtuple("Timeline_item", [
 Item_activity = namedtuple("Item_activity", [
       'count'
     , 'icon'
+    , 'data'
     , 'link'
 ])
 

@@ -69,6 +69,7 @@ def _format_text(text):
             text = text + " " + word
     return text
 
+ACTIVITY_POST_ROUTE = '/'
 def _make_activities(activities):
     
     main = div(style="font-size:78%;padding-right:5px;",
@@ -76,13 +77,23 @@ def _make_activities(activities):
 
     for activity in activities:
         d = main # << a()
-        d << img(activity.count,width="20",height="20",
-                 style="padding-right:2px;",
-                 src=activity.icon)
-        d << b(activity.count,style="vertical-align:middle;color:#073642")
+        logging.debug(activity)
+        if activity.link:
+            d = d << form(action=ACTIVITY_POST_ROUTE,
+                          method="post")
+            d << input(type="image",src=activity.icon,
+                       width="20",height="20",
+                       style="padding-right:2px",
+                       alt=activity.count)
+            activity.link(d,activity.data)
 
-    #    if activity.link:
-    #        d.attributes['href'] = activity.link
+        else:
+            d << img(activity.count,width="20",height="20",
+                     style="padding-right:2px;",
+                     src=activity.icon)
+
+        if activity.count > 0:
+            d << b(activity.count,style="vertical-align:middle;color:#073642")
 
     return main
 
@@ -227,4 +238,11 @@ def _make_card(display):
   d = d << tr()
   d = d << td(display,style="padding:20px")
 
-  return main
+  return main 
+
+def add_activity_inputs(parent,name,item,activity):
+
+    parent << input(type="hidden", name="service", value=name)
+    parent << input(type="hidden", name="item", value=item)
+    parent << input(type="hidden", name="activity", value=activity)
+    return parent

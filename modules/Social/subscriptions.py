@@ -11,9 +11,8 @@ SERVICES = [
 def get_subscriptions(userinfo,root_url):
 
   return map (
-      lambda service:
-        service.get_service_info(userinfo,root_url),
-      SERVICES)
+          lambda (info,svc): info,
+      _get_subscriptions(userinfo,root_url))
 
 def has_some_subscription(userinfo,root_url):
     subscriptions = get_subscriptions(userinfo,root_url)
@@ -54,7 +53,7 @@ def get_timeline_items(userinfo,root_url):
     results = Core.MtMapper.do(get,SERVICES)
 
     items_map = {}
-    for (name,items) in results:
+    for (_,items) in results:
         for item in items:
             items_map[item.creation_time] = item
 
@@ -65,3 +64,19 @@ def get_timeline_items(userinfo,root_url):
 
     items.reverse()
     return items 
+
+
+
+def apply_activity(userinfo,root_url,svc_name,item,activity,activity_data):
+    services = _get_subscriptions(userinfo,root_url)
+
+    for (info,service) in services:
+        if info.name == svc_name:
+            service.apply_activity(userinfo,root_url,item,activity,activity_data)
+            return
+
+def _get_subscriptions(userinfo,root_url):
+  return map (
+      lambda service:
+        (service.get_service_info(userinfo,root_url),service),
+      SERVICES)

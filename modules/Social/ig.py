@@ -86,6 +86,7 @@ def _get_activities(data):
             Core.Coretypes.Item_activity(
             count=data.like_count,
             icon="/static/images/glyph-heart-pop.png",
+            data=None,
             link=None))
 
     return activities
