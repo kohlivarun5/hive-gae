@@ -61,8 +61,8 @@ def get_items(params):
     cards = []
 
     for post in news_feed['data']:
-      if ('from' in post and 'category' in post['from']):
-        continue
+      #if ('from' in post and 'category' in post['from']):
+      #  continue
       if 'picture' in post:
         post['picture'] = post['picture'].replace("_s.","_n.")
       cards.append(Core.Coretypes.Timeline_item(
