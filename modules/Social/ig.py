@@ -8,8 +8,10 @@ import logging
 
 CALLBACK_LINK = "/ig_oauth2callback"
 
+NAME = "Instagram"
+
 def get_service_info(userinfo,root_url):
-  name = "Instagram"
+  name = NAME
   if (_client(userinfo) is None):
     return Core.Coretypes.Login_service(
             name=name,
@@ -51,6 +53,19 @@ def get_items(params):
   return cards
 
 
+_LIKE_ACTIVITY='like'
+
+def apply_activity(userinfo,root_url,item,activity,_):
+    client = _client(userinfo)
+
+    logging.info(activity)
+    if activity == _LIKE_ACTIVITY:
+        logging.info(activity)
+        client.like_media(media_id=item)
+
+    return
+
+
 ############
 ## PRIVATE
 ############
@@ -80,16 +95,24 @@ def _client(userinfo):
   else:
     return client.InstagramAPI(access_token=userinfo.ig_access_token)
 
+def _like_creator(parent,item):
+    return Core.Html.add_activity_inputs(
+            parent,NAME,
+            item.id,
+            _LIKE_ACTIVITY)
+
 def _get_activities(data):
     activities = []
     activities.append(
             Core.Coretypes.Item_activity(
             count=data.like_count,
             icon="/static/images/glyph-heart-pop.png",
-            data=None,
-            link=None))
+            data=data,
+            link=_like_creator))
 
     return activities
+
+
 
 def _card_display(data):
 
