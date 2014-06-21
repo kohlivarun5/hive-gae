@@ -50,6 +50,17 @@ class GapiCallbackHandler(webapp2.RequestHandler):
     else:
         self.redirect('/')
 
+import Subscriptions
+def _render_after_subscription(self,userinfo,root_url,alert):
+
+    if Social.Subscriptions.has_all_subscriptions(userinfo,root_url):
+        self.redirect('/')
+    else:
+        self.response.out.write(
+            Subscriptions.Main.render_page(
+                userinfo,root_url,alert))
+
+
 class FbCallbackHandler(webapp2.RequestHandler):
   """Callback called by fb authentication"""
 
@@ -71,8 +82,8 @@ class FbCallbackHandler(webapp2.RequestHandler):
     userinfo.fb_access_token = access_token
     Gae.Userinfo.put(userinfo)
 
-    memcache.set(key=userid, value="Subscribed to Facebook!", time=5)
-    self.redirect('/subscriptions')
+    _render_after_subscription(self,userinfo,root_url,
+            "Subscribed to Facebook!")
 
 class IgCallbackHandler(webapp2.RequestHandler):
   """Callback called by ig authentication"""
@@ -94,6 +105,6 @@ class IgCallbackHandler(webapp2.RequestHandler):
 
     userinfo.ig_access_token = access_token
     Gae.Userinfo.put(userinfo)
-
-    memcache.set(key=userid, value="Subscribed to Instagram!", time=5)
-    self.redirect('/subscriptions')
+    
+    _render_after_subscription(self,userinfo,root_url,
+            "Subscribed to Instagram!")

@@ -15,6 +15,27 @@ def get_subscriptions(userinfo,root_url):
         service.get_service_info(userinfo,root_url),
       SERVICES)
 
+def has_some_subscription(userinfo,root_url):
+    subscriptions = get_subscriptions(userinfo,root_url)
+    
+    has_some_subscription = reduce(
+            (lambda acc,service:
+                acc or 
+                (type(service.info) is Core.Coretypes.Subscribed)), 
+            subscriptions, False)
+
+    return has_some_subscription
+    
+def has_all_subscriptions(userinfo,root_url):
+    subscriptions = get_subscriptions(userinfo,root_url)
+    
+    has_all_subscriptions = reduce(
+            (lambda acc,service:
+                acc and 
+                (type(service.info) is Core.Coretypes.Subscribed)), 
+            subscriptions, True)
+
+    return has_all_subscriptions
 
 
 from collections import OrderedDict
