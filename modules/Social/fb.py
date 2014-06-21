@@ -80,9 +80,7 @@ _LIKE_ACTIVITY='like'
 def apply_activity(userinfo,root_url,item,activity,_):
     client = _client(userinfo)
 
-    logging.info(activity)
     if activity == _LIKE_ACTIVITY:
-        logging.info(activity)
         client.put_like(item)
 
     return
@@ -123,9 +121,7 @@ def _get_activities(data):
     if 'actions' in data:
         for action in data['actions']:
             if action['name'] == 'Like':
-                logging.info(action)
                 likes_link = _like_creator
-                logging.info(likes_link)
 
             #if action['name'] == 'Comment':
             #    comment_link = action['link']
