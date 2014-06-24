@@ -1,6 +1,7 @@
 import facebook
 
 import Core
+import Glass 
 
 import dateutil.parser
 import logging
@@ -77,8 +78,6 @@ def get_items(params):
 
 _LIKE_ACTIVITY='like'
 
-def _glass_display(item,_):
-    return None
 
 def apply_activity(userinfo,item,activity,_):
     client = _client(userinfo)
@@ -145,8 +144,7 @@ def _get_activities(data):
 
     return activities
 
-def _card_display(data):
-
+def _card_params(data):
     poster_info = data['from']
 
     poster = poster_info['name'].encode('ascii', 'xmlcharrefreplace')
@@ -157,8 +155,8 @@ def _card_display(data):
         text = data['message'].encode('ascii', 'xmlcharrefreplace')
     elif 'description' in data:
         text = data['description'].encode('ascii', 'xmlcharrefreplace')
-
-    return Core.Html.make_web_card(Core.Coretypes.Web_card_params(
+    
+    return Core.Coretypes.Web_card_params(
         logo="/static/images/FB-f-Logo__blue_29.png",
         poster=poster,
         poster_link=poster_link,
@@ -166,5 +164,17 @@ def _card_display(data):
         photo=(data['picture'] if 'picture' in data else None),
         text=text,
         activities=_get_activities(data)
-    ))
+    )
 
+
+def _card_display(data):
+    return Core.Html.make_web_card(
+            _card_params(data))
+
+def _glass_display(data,is_notify):
+    params = _card_params(data)
+    return Glass.Card.of_params(
+            NAME,
+            params,
+            is_notify,
+            Core.Html.make_glass_card(params))

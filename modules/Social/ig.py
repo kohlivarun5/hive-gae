@@ -133,8 +133,9 @@ def _card_display(data):
             _card_params(data))
 
 def _glass_display(data,is_notify):
+    params = _card_params(data)
     return Glass.Card.of_params(
             NAME,
-            _card_params(data),
+            params,
             is_notify,
-            None)
+            Core.Html.make_glass_card(params))

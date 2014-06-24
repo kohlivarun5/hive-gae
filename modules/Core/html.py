@@ -147,6 +147,13 @@ def make_web_card(params):
 
     return main
 
+def make_glass_card(params):
+    if params is None or params.photo is None:
+        return None
+    main = article(cl='photo')
+    d = main << a()
+    d << img(src=params.photo,width="100%",height="100%")
+    return main.render()
 
 ###################################
 ## PRIVATES
