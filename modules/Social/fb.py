@@ -70,14 +70,17 @@ def get_items(params):
                   dateutil.parser.parse(post["created_time"]),
                 data=post,
                 web_display=_card_display,
-                glass_display=_card_display))
+                glass_display=_glass_display))
 
     logging.debug(cards)
     return cards
 
 _LIKE_ACTIVITY='like'
 
-def apply_activity(userinfo,root_url,item,activity,_):
+def _glass_display(item,_):
+    return None
+
+def apply_activity(userinfo,item,activity,_):
     client = _client(userinfo)
 
     if activity == _LIKE_ACTIVITY:

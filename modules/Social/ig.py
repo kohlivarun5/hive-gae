@@ -1,6 +1,7 @@
 from instagram import client, subscriptions
 
 import Core
+import Glass
 
 import pytz
 
@@ -47,7 +48,7 @@ def get_items(params):
         pytz.utc.localize(media.created_time),
       data=media,
       web_display=_card_display,
-      glass_display=_card_display))
+      glass_display=_glass_display))
 
   logging.debug(cards)
   return cards
@@ -55,7 +56,7 @@ def get_items(params):
 
 _LIKE_ACTIVITY='like'
 
-def apply_activity(userinfo,root_url,item,activity,_):
+def apply_activity(userinfo,item,activity,_):
     client = _client(userinfo)
 
     logging.info(activity)
@@ -112,15 +113,11 @@ def _get_activities(data):
 
     return activities
 
-
-
-def _card_display(data):
-
+def _card_params(data):
     poster = data.user.username.encode('ascii', 'xmlcharrefreplace')
     poster_link = "http://www.instagram.com/" + poster
 
-
-    return Core.Html.make_web_card(Core.Coretypes.Web_card_params(
+    return Core.Coretypes.Web_card_params(
         logo="/static/images/Instagram_Icon_Large.png",
         poster=poster,
         poster_link=poster_link,
@@ -129,4 +126,15 @@ def _card_display(data):
         text=(data.caption.text.encode('ascii', 'xmlcharrefreplace') 
                 if data.caption else None),
         activities=_get_activities(data)
-    ))
+    )
+
+def _card_display(data):
+    return Core.Html.make_web_card(
+            _card_params(data))
+
+def _glass_display(data,is_notify):
+    return Glass.Card.of_params(
+            NAME,
+            _card_params(data),
+            is_notify,
+            None)

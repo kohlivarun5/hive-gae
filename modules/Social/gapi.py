@@ -2,6 +2,9 @@ import Core
 
 from oauth2client.client import flow_from_clientsecrets
 
+import httplib2
+from apiclient.discovery import build
+
 CALLBACK_LINK = "/oauth2callback"
 
 def get_service_info(userinfo,root_url):
@@ -37,6 +40,28 @@ def get_redirect_uri(root_url,is_prompt=True):
 _SCOPES = ('https://www.googleapis.com/auth/glass.timeline '
           'https://www.googleapis.com/auth/glass.location '
           'https://www.googleapis.com/auth/userinfo.profile')
+
+def create_service(service, version, creds=None):
+  """Create a Google API service.
+
+  Load an API service from a discovery document and authorize it with the
+  provided credentials.
+
+  Args:
+    service: Service name (e.g 'mirror', 'oauth2').
+    version: Service version (e.g 'v1').
+    creds: Credentials used to authorize service.
+  Returns:
+    Authorized Google API service.
+  """
+  # Instantiate an Http instance
+  http = httplib2.Http()
+
+  if creds:
+    # Authorize the Http instance with the passed credentials
+    creds.authorize(http)
+
+  return build(service, version, http=http)
 
 
 def _get_auth_flow(root_url):

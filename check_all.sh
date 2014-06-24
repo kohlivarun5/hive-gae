@@ -3,3 +3,4 @@ shopt -s extglob
 . ./set_path.sh 
 pychecker --only modules/Core/!(*html*).py
 pychecker --only modules/Social/*.py
+pychecker --only modules/Notify/*.py

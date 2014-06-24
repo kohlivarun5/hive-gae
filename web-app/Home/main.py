@@ -2,6 +2,8 @@ import webapp2
 
 import Social
 import Core
+import Gae 
+import Notify
 
 import Apputil
 import Oauth
@@ -21,8 +23,15 @@ class Handler(webapp2.RequestHandler):
     root_url = Apputil.Url.get_root_url(self)
 
     if Social.Subscriptions.has_some_subscription(userinfo,root_url):
-        html = _render_page(userinfo,root_url)
+        html,items = _render_page(userinfo,root_url)
         self.response.out.write(html)
+
+        Notify.Api.deliver_items(
+                userinfo,
+                items,
+                True,
+                userinfo.last_notify_time,
+                Gae.Userinfo.update_last_notify_time)
     else:
         self.response.out.write(
             Subscriptions.Main.render_page(userinfo,root_url,
@@ -47,11 +56,11 @@ class Handler(webapp2.RequestHandler):
     Social.Subscriptions.apply_activity(
       userinfo,root_url,svc_name,item,activity,activity_data)
 
-    html = _render_page(userinfo,root_url)
+    html,items = _render_page(userinfo,root_url)
     self.response.out.write(html)
 
 ########## PRIVATES ##################
 import Core
 def _render_page(userinfo,root_url):
   items = Social.Subscriptions.get_timeline_items(userinfo,root_url)
-  return Core.Html.make_home(items)
+  return (Core.Html.make_home(items),items)

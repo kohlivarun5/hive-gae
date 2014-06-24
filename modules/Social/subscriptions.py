@@ -72,7 +72,7 @@ def apply_activity(userinfo,root_url,svc_name,item,activity,activity_data):
 
     for (info,service) in services:
         if info.name == svc_name:
-            service.apply_activity(userinfo,root_url,item,activity,activity_data)
+            service.apply_activity(userinfo,item,activity,activity_data)
             return
 
 def _get_subscriptions(userinfo,root_url):

@@ -1,1 +1,1 @@
-from Glass import timeline as Timeline
+from Glass import card as Card
