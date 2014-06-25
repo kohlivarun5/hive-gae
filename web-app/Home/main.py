@@ -26,7 +26,7 @@ class Handler(webapp2.RequestHandler):
         html,items = _render_page(userinfo,root_url)
         self.response.out.write(html)
 
-        Notify.Api.deliver_items(
+        Gae.Deferred.do(Notify.Api.deliver_items,
                 userinfo,
                 items,
                 True,
