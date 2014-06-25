@@ -31,7 +31,15 @@ class Userinfo(db.Model):
 
 def get(userid):
     logging.info("Getting creds for{%s}" % userid)
-    return Userinfo.get_by_key_name(userid)
+    userinfo = Userinfo.get_by_key_name(userid)
+
+    if userinfo is not None and userinfo.last_notify_time is not None:
+        logging.debug("Loading user debug")
+        logging.debug(userinfo.last_notify_time)
+        userinfo.last_notify_time = pytz.utc.localize(
+                userinfo.last_notify_time)
+
+    return userinfo
 
 def put(userinfo):
   userinfo.put()
@@ -41,6 +49,10 @@ def put_credentials(userid,creds):
     StorageByKeyName(Userinfo, userid, 'credentials').put(creds)
 
 def update_last_notify_time(userinfo):
-    userinfo.last_glass_update = datetime.datetime.now(pytz.utc)
+    userinfo.last_notify_time = datetime.datetime.now(pytz.utc)
+
+    logging.debug("Saving user debug")
+    logging.debug(userinfo.last_notify_time)
+
     put(userinfo)
 

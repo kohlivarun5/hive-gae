@@ -150,9 +150,15 @@ def make_web_card(params):
 def make_glass_card(params):
     if params is None or params.photo is None:
         return None
+
     main = article(cl='photo')
-    d = main << a()
-    d << img(src=params.photo,width="100%",height="100%")
+    main << img(src=params.photo,width="100%",height="100%")
+
+    if params.text:
+        main << div(cl="photo-overlay")
+        s = main << section()
+        s << p(params.text, cl="text-auto-size")
+
     return main.render()
 
 ###################################

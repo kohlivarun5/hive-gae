@@ -5,19 +5,12 @@ def of_params(
         is_notify,
         html):
 
-    found_something_to_post = False
+    if html is None:
+        return None
+
     body = {}
 
-    if html is not None:
-        body['html'] = html
-        found_something_to_post = True
-
-    elif params.text is not None:
-        body['text'] = params.text
-        found_something_to_post = True
-
-    if not found_something_to_post:
-        return None
+    body['html'] = html
 
     body['bundleId'] = "Hive_bundle_"+bundleId
 
