@@ -24,7 +24,7 @@ class Handler(webapp2.RequestHandler):
       userid = user.key().name()
       logging.info("Processing userid:{%s}" % userid)
 
-      userinfo = Apputil.Userinfo.get_from_request_safe(self)
+      userinfo = Gae.Userinfo.get(userid)
       root_url = Apputil.Url.get_root_url(self)
       Gae.Deferred.do(_get_and_deliver,userinfo,root_url)
 
