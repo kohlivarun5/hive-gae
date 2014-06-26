@@ -29,6 +29,9 @@ class Userinfo(db.Model):
 
   last_notify_time = db.DateTimeProperty(required=False)
 
+def get_all():
+    return Userinfo.all()
+
 def get(userid):
     logging.info("Getting creds for{%s}" % userid)
     userinfo = Userinfo.get_by_key_name(userid)

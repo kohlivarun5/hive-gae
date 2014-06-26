@@ -9,11 +9,13 @@ import webapp2
 import Home
 import Oauth
 import Subscriptions
+import Cron
 
 ROUTES = (
     Home.ROUTES
   + Oauth.ROUTES
   + Subscriptions.ROUTES
+  + Cron.ROUTES
   )
 
 app = webapp2.WSGIApplication(ROUTES)
