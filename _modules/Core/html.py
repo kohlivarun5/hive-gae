@@ -246,7 +246,7 @@ def _make_page(tab,divs,alert=None):
 
 def _make_card(display):
   main = div(cl="span4")
-  d = main << table(style="background-color:#F5F5F9;box-shadow: 0 0 13px 10px #888;",
+  d = main << table(style="background-color:#F5F5F9;box-shadow: 5px 5px 10px 5px #888;",
                     cl="table table-bordered")
   d = d << tr()
   d = d << td(display,style="padding:10px")
