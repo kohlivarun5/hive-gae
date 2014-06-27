@@ -9,6 +9,8 @@ import Apputil
 import Oauth
 
 import Subscriptions
+import main_deferred
+
 
 import logging
 
@@ -25,13 +27,14 @@ class Handler(webapp2.RequestHandler):
     if Social.Subscriptions.has_some_subscription(userinfo,root_url):
         html,items = _render_page(userinfo,root_url)
         self.response.out.write(html)
+        userid = Apputil.Userinfo.get_id_safe(self)
+        logging.info(userid)
+        Gae.Deferred.do(
+            main_deferred.home_main_defer,
+            userid,
+            items,
+            Gae.Userinfo.update_last_notify_time)
 
-        Gae.Deferred.do(Notify.Api.deliver_items,
-                userinfo,
-                items,
-                True,
-                userinfo.last_notify_time,
-                Gae.Userinfo.update_last_notify_time)
     else:
         self.response.out.write(
             Subscriptions.Main.render_page(userinfo,root_url,
