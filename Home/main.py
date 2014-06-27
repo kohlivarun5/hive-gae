@@ -9,7 +9,7 @@ import Apputil
 import Oauth
 
 import Subscriptions
-import main_deferred
+import deferutil as DeferUtil
 
 
 import logging
@@ -30,7 +30,7 @@ class Handler(webapp2.RequestHandler):
         userid = Apputil.Userinfo.get_id_safe(self)
         logging.info(userid)
         Gae.Deferred.do(
-            main_deferred.home_main_defer,
+            DeferUtil.home_defer_notifications,
             userid,
             items,
             Gae.Userinfo.update_last_notify_time)
