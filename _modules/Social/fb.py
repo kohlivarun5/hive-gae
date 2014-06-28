@@ -45,7 +45,7 @@ def get_items(params):
                 ",".join([
                 'from',
                 'link',
-                'picture',
+                'full_picture',
                 'message',
                 'object_id',
                 'description',
@@ -64,8 +64,8 @@ def get_items(params):
     for post in news_feed['data']:
       #if ('from' in post and 'category' in post['from']):
       #  continue
-      if 'picture' in post:
-        post['picture'] = post['picture'].replace("_s.","_n.")
+      if 'full_picture' in post:
+        post['picture'] = post['full_picture'].replace("_s.","_n.")
       cards.append(Core.Coretypes.Timeline_item(
                 creation_time=
                   dateutil.parser.parse(post["created_time"]),
