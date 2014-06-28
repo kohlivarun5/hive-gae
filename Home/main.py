@@ -9,8 +9,9 @@ import Apputil
 import Oauth
 
 import Subscriptions
-import deferutil as DeferUtil
 
+import deferutil as DeferUtil
+from google.appengine.ext import deferred
 
 import logging
 
@@ -27,12 +28,11 @@ class Handler(webapp2.RequestHandler):
     if Social.Subscriptions.has_some_subscription(userinfo,root_url):
         html,items = _render_page(userinfo,root_url)
         self.response.out.write(html)
-        userid = Apputil.Userinfo.get_id_safe(self)
-        logging.info(userid)
-        Gae.Deferred.do(
-            DeferUtil.home_defer_notifications,
-            userid,
+        deferred.defer(
+            DeferUtil.defer_notifications,
+            userinfo.key().name(),
             items,
+            False,
             Gae.Userinfo.update_last_notify_time)
 
     else:

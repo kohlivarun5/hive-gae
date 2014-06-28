@@ -2,7 +2,11 @@ import Social
 import Gae 
 import Notify
 
+
 import Apputil
+
+from google.appengine.ext import deferred
+import deferutil as DeferUtil
 
 import logging
 import webapp2
@@ -26,18 +30,13 @@ class Handler(webapp2.RequestHandler):
 
       userinfo = Gae.Userinfo.get(userid)
       root_url = Apputil.Url.get_root_url(self)
-      Gae.Deferred.do(_get_and_deliver,userinfo,root_url)
+      deferred.defer(
+              DeferUtil.get_items_and_deliver, 
+              userinfo.key().name(),root_url)
 
 
 ###############
 # PRIVATES
 ###############
 
-def _get_and_deliver(userinfo,root_url):
-    items = Social.Subscriptions.get_timeline_items(userinfo,root_url)
-    Gae.Deferred.do(Notify.Api.deliver_items,
-                userinfo,
-                items,
-                False,
-                userinfo.last_notify_time,
-                Gae.Userinfo.update_last_notify_time)
+
