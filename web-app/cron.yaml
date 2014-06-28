@@ -1,4 +1,0 @@
-cron:
-- description: regular notification delivery
-  url: /cron_notifyAll
-  schedule: every 4 hours from 8:00 to 22:00
