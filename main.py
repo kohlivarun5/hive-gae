@@ -1,5 +1,6 @@
 # Add the library location to the path
 import sys
+sys.path.insert(0, '.')
 sys.path.insert(0, '_libs')
 sys.path.insert(0, '_modules')
 

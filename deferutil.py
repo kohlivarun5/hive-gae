@@ -1,12 +1,12 @@
 # Add the library location to the path
 import sys
+sys.path.insert(0, '.')
 sys.path.insert(0, '_libs')
 sys.path.insert(0, '_modules')
 
 import Social
-
 import Gae
-import Notify
+import Notifications
 
 from google.appengine.ext import deferred
 
@@ -17,7 +17,7 @@ def defer_notifications(
     update_last_notify_time):
 
     userinfo = Gae.Userinfo.get(userid)
-    Notify.Api.deliver_items(
+    Notifications.Deliver.deliver_items(
                 userinfo,
                 items,
                 is_notify,

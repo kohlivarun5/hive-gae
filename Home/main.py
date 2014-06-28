@@ -3,7 +3,6 @@ import webapp2
 import Social
 import Core
 import Gae 
-import Notify
 
 import Apputil
 import Oauth

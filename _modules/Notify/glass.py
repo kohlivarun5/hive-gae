@@ -1,12 +1,12 @@
 import Social
 
-def deliver_items(userinfo,items,is_notify):
+def deliver_items(userinfo,items,is_notify,service_builder):
 
     cards = map(lambda item:
             item.glass_display(
                 item.data,is_notify),items)
     
-    mirror_service = Social.Gapi.create_service(
+    mirror_service = service_builder(
             'mirror', 'v1', userinfo.credentials)
 
     map((lambda card:
