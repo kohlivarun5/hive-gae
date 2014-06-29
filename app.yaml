@@ -14,7 +14,7 @@ handlers:
 
 - url: /favicon.ico
   static_files: static/images/favicon.ico 
-  upload: noop
+  upload: static/images/favicon\.ico
 
 - url: /apple-touch-icon.png
   static_files: static/images/main_icon.png 
