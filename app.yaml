@@ -22,7 +22,6 @@ handlers:
 
 - url: /images
   static_dir: static/images/ 
-  upload: noop
 
 - url: /robots.txt
   static_files: static/robots.txt 
