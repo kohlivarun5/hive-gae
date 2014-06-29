@@ -8,6 +8,26 @@ builtins:
 - deferred: on
 
 handlers:
+- url: /google7e073e6fd0855e04.html
+  static_files: static/google7e073e6fd0855e04.html 
+  upload: noop
+
+- url: /favicon.ico
+  static_files: static/images/favicon.ico 
+  upload: noop
+
+- url: /apple-touch-icon.png
+  static_files: static/images/main_icon.png 
+  upload: noop
+
+- url: /images
+  static_dir: static/images/ 
+  upload: noop
+
+- url: /robots.txt
+  static_files: static/robots.txt 
+  upload: static/robots.txt
+
 - url: /static
   static_dir: static
   secure: always
