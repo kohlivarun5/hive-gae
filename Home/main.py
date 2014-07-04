@@ -21,12 +21,24 @@ class Handler(webapp2.RequestHandler):
   def get(self):
     """Render the page."""
 
+    logging.info("Start rendering main page")
+
     userinfo = Apputil.Userinfo.get_from_request_safe(self)
     root_url = Apputil.Url.get_root_url(self)
 
-    if Social.Subscriptions.has_some_subscription(userinfo,root_url):
+    has_all_subs = Social.Subscriptions.has_all_subscriptions(userinfo,root_url)
+
+    if has_all_subs or Social.Subscriptions.has_some_subscription(userinfo,root_url):
+
+        if has_all_subs:
+            logging.info("Setting cache")
+            self.response.headers['Cache-Control'] = "private,s-maxage=300,max-age=300"
+
         html,items = _render_page(userinfo,root_url)
         self.response.out.write(html)
+
+        #logging.debug(self.response)
+
         deferred.defer(
             DeferUtil.defer_notifications,
             userinfo.key().name(),
@@ -36,9 +48,12 @@ class Handler(webapp2.RequestHandler):
             Gae.Userinfo.update_last_notify_time)
 
     else:
+
         self.response.out.write(
             Subscriptions.Main.render_page(userinfo,root_url,
                 "Login to a network to start using {Hive}!"))
+
+
 
   @Apputil.Oauth.auth_required
   def post(self):
@@ -58,9 +73,7 @@ class Handler(webapp2.RequestHandler):
 
     Social.Subscriptions.apply_activity(
       userinfo,root_url,svc_name,item,activity,activity_data)
-
-    html,items = _render_page(userinfo,root_url)
-    self.response.out.write(html)
+    self.redirect('/')
 
 ########## PRIVATES ##################
 import Core
