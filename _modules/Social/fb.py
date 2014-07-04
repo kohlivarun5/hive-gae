@@ -7,6 +7,8 @@ import dateutil.parser
 import logging
 import traceback
 
+import re
+
 CALLBACK_LINK = "/fb_oauth2callback"
 
 NAME="Facebook"
@@ -65,7 +67,10 @@ def get_items(params):
       #if ('from' in post and 'category' in post['from']):
       #  continue
       if 'full_picture' in post:
-        post['picture'] = post['full_picture'].replace("_s.","_n.")
+        post['picture'] = re.sub(
+               '%2F[a-z][0-9]+x[0-9]+%2F','%2F',
+               post['full_picture'].replace("_s.","_n.").replace("_t.","_n."))
+
       cards.append(Core.Coretypes.Timeline_item(
                 creation_time=
                   dateutil.parser.parse(post["created_time"]),
