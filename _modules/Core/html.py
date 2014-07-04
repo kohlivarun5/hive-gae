@@ -153,7 +153,7 @@ def make_glass_card(params):
 
     main = article(cl='photo')
     main << img(src=params.photo,width="100%",height="100%")
-    main << div(cl="overlay-gradient-tall")
+    main << div(cl="overlay-gradient-tall-dark")
 
     #head = main << header()
     # head ** Put poster pic here
@@ -161,13 +161,13 @@ def make_glass_card(params):
 
     if params.text:
         s = main << section()
-        s << p(params.text, cl="text-auto-size")
+        s << p(b(params.text), cl="text-auto-size")
 
     foot = main << footer()
     d1 = foot << div(cl="blue")
 
     if params.logo:
-        d1 << img(src=params.logo,width="35",height="37",
+        d1 << img(src=params.logo,width="34",height="34",
                   align="left")
 
     d1 << ("@"+(params.poster.replace(" ", "")))
