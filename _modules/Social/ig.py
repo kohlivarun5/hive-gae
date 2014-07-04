@@ -113,12 +113,12 @@ def _get_activities(data):
 
     return activities
 
-def _card_params(data):
+def _card_params(data,root_url):
     poster = data.user.username.encode('ascii', 'xmlcharrefreplace')
     poster_link = "http://www.instagram.com/" + poster
 
     return Core.Coretypes.Web_card_params(
-        logo="/static/images/Instagram_Icon_Large.png",
+        logo=root_url+"/static/images/Instagram_Icon_Large.png",
         poster=poster,
         poster_link=poster_link,
         post_link=data.link,
@@ -128,12 +128,12 @@ def _card_params(data):
         activities=_get_activities(data)
     )
 
-def _card_display(data):
+def _card_display(data,root_url):
     return Core.Html.make_web_card(
-            _card_params(data))
+            _card_params(data,root_url))
 
-def _glass_display(data,is_notify):
-    params = _card_params(data)
+def _glass_display(data,is_notify,root_url):
+    params = _card_params(data,root_url)
     return Glass.Card.of_params(
             NAME,
             params,

@@ -13,6 +13,7 @@ from google.appengine.ext import deferred
 def defer_notifications(
     userid,
     items,
+    root_url,
     is_notify,
     update_last_notify_time):
 
@@ -20,6 +21,7 @@ def defer_notifications(
     Notifications.Deliver.deliver_items(
                 userinfo,
                 items,
+                root_url,
                 is_notify,
                 userinfo.last_notify_time,
                 update_last_notify_time)
@@ -30,5 +32,6 @@ def get_items_and_deliver(userid,root_url):
     defer_notifications(
         userinfo.key().name(),
         items,
+        root_url,
         False,
         Gae.Userinfo.update_last_notify_time)

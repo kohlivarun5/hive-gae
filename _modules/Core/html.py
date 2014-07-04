@@ -3,7 +3,7 @@ from Core import coretypes as Coretypes
 
 import logging
 
-def make_home(items,alert=None):
+def make_home(items,root_url,alert=None):
 
   # Loop and get each items display
 
@@ -11,7 +11,7 @@ def make_home(items,alert=None):
   d = main << div(style="margin-top:5px;")
 
   for item in items:
-      display = item.web_display(item.data)
+      display = item.web_display(item.data,root_url)
       if display:
         d << _make_card(display)
 
@@ -153,11 +153,26 @@ def make_glass_card(params):
 
     main = article(cl='photo')
     main << img(src=params.photo,width="100%",height="100%")
+    main << div(cl="overlay-gradient-tall")
+
+    #head = main << header()
+    # head ** Put poster pic here
+    #head << h1(params.poster)
 
     if params.text:
-        main << div(cl="photo-overlay")
         s = main << section()
         s << p(params.text, cl="text-auto-size")
+
+    foot = main << footer()
+    d1 = foot << div(cl="blue")
+
+    if params.logo:
+        d1 << img(src=params.logo,width="35",height="37",
+                  align="left")
+
+    d1 << ("@"+(params.poster.replace(" ", "")))
+
+    #logging.info(main.render())
 
     return main.render()
 

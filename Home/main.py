@@ -31,6 +31,7 @@ class Handler(webapp2.RequestHandler):
             DeferUtil.defer_notifications,
             userinfo.key().name(),
             items,
+            root_url,
             False,
             Gae.Userinfo.update_last_notify_time)
 
@@ -65,4 +66,4 @@ class Handler(webapp2.RequestHandler):
 import Core
 def _render_page(userinfo,root_url):
   items = Social.Subscriptions.get_timeline_items(userinfo,root_url)
-  return (Core.Html.make_home(items),items)
+  return (Core.Html.make_home(items,root_url),items)

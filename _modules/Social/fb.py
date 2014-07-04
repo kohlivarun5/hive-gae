@@ -149,7 +149,7 @@ def _get_activities(data):
 
     return activities
 
-def _card_params(data):
+def _card_params(data,root_url):
     poster_info = data['from']
 
     poster = poster_info['name'].encode('ascii', 'xmlcharrefreplace')
@@ -162,7 +162,7 @@ def _card_params(data):
         text = data['description'].encode('ascii', 'xmlcharrefreplace')
     
     return Core.Coretypes.Web_card_params(
-        logo="/static/images/FB-f-Logo__blue_29.png",
+        logo=root_url+"/static/images/FB-f-Logo__blue_29.png",
         poster=poster,
         poster_link=poster_link,
         post_link=(data['link'] if 'link' in data else None),
@@ -172,12 +172,12 @@ def _card_params(data):
     )
 
 
-def _card_display(data):
+def _card_display(data,root_url):
     return Core.Html.make_web_card(
-            _card_params(data))
+            _card_params(data,root_url))
 
-def _glass_display(data,is_notify):
-    params = _card_params(data)
+def _glass_display(data,is_notify,root_url):
+    params = _card_params(data,root_url)
     return Glass.Card.of_params(
             NAME,
             params,

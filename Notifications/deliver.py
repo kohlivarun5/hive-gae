@@ -8,6 +8,7 @@ CONSUMERS = [
 def deliver_items(
         userinfo,
         items,
+        root_url,
         is_notify,
         last_notify_time,
         update_time_callback):
@@ -26,6 +27,7 @@ def deliver_items(
                 userinfo,
                 items,
                 is_notify,
-                Gae.DiscoveryDocument.build)
+                Gae.DiscoveryDocument.build,
+                root_url)
 
     update_time_callback(userinfo)
