@@ -18,7 +18,7 @@ doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.
 charset = '<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />\n'
 
 tags = ['html', 'body', 'head', 'link', 'meta', 'div', 'p', 'form', 'legend', 
-        'input', 'select', 'span', 'b', 'i', 'option', 'img', 'script',
+        'input', 'select', 'span', 'b', 'i', 'option', 'img', 'script','style',
         'table', 'tr', 'td', 'th', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'fieldset', 'a', 'title', 'body', 'head', 'title', 'script', 'br', 'table',
         'button','article','ul','li','nav','section','header','footer','strong']

@@ -53,6 +53,7 @@ _MAX_TEXT_LENGTH = 70 #Unix !
 _ELIPSES = " ..."
 
 def _format_text(text):
+
     if len(text) <= _MAX_TEXT_LENGTH:
         return text
 
@@ -125,12 +126,8 @@ def make_web_card(params):
         d1 = d << tr()
         d1 = d1 << td(style="padding:3px 5px 2px 5px")
 
-        d1 = d1 << p(_format_text(params.text),
-                style="margin:2px;word-wrap:break-word;\
-                       font-size:110%;\
-                       font-family:monospace;\
-                       color:#657b83;\
-                       padding:2px")
+        d1 = d1 << p(params.text,
+                     cl="expandableText expandableTextBase")
 
     d2 = a(img(src=params.photo,width="100%",height="100%"))
     if params.post_link:
@@ -187,6 +184,49 @@ def _addCSS(tag, *arg):
   for f in arg:
     tag += link(rel='stylesheet', type='text/css', href=f)
 
+def _addClickToExpand(tag):
+
+    css_style = r"""
+.expandableTextBase {
+    text-overflow: ellipsis;
+    display: block;
+    width:100%;
+    margin:2px;
+    word-wrap:break-word;
+    font-size:110%;
+    font-family:monospace;
+    color:#657b83;
+    padding:2px
+}
+
+.expandableText {
+    white-space: nowrap;
+    overflow: hidden;
+}
+"""
+#.expandableText:hover {
+#    text-decoration:none;
+#    border-bottom: 1px solid #657b83;
+#}
+#
+#"""
+
+    tag += style(css_style,type="text/css")
+
+    js_script = r"""
+//<![CDATA[ 
+$(window).load(function(){
+$(function () {
+    $(".expandableTextBase").click(function () {
+        $(this).toggleClass("expandableText");
+        $(this).toggleClass("expandedText");
+    })
+});
+});
+//]]>  
+"""
+
+    tag += script(js_script,type="text/javascript")
 
 def _make_page(tab,divs,alert=None):
   page = PyH('{Hive}')
@@ -205,10 +245,12 @@ def _make_page(tab,divs,alert=None):
       '/static/bootstrap/css/bootstrap-responsive.min.css',
       '/static/main.css')
 
+
   _addJS(page.body,
       '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
       '/static/bootstrap/js/bootstrap.min.js'
       )
+
 
   page.body.attributes["style"] = "background-color:#F1ECDE"
 
@@ -254,6 +296,8 @@ def _make_page(tab,divs,alert=None):
 
   if divs:
     map(lambda d: data_div << d, divs)
+
+  _addClickToExpand(page.body)
 
   return page.render()
 
