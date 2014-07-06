@@ -21,7 +21,7 @@ tags = ['html', 'body', 'head', 'link', 'meta', 'div', 'p', 'form', 'legend',
         'input', 'select', 'span', 'b', 'i', 'option', 'img', 'script','style',
         'table', 'tr', 'td', 'th', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'fieldset', 'a', 'title', 'body', 'head', 'title', 'script', 'br', 'table',
-        'button','article','ul','li','nav','section','header','footer','strong']
+        'button','article','ul','li','nav','section','header','footer','strong','center']
 
 selfClose = ['input', 'img', 'link', 'br']
 

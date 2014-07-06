@@ -15,7 +15,9 @@ def make_home(items,root_url,alert=None):
       if display:
         d << _make_card(display)
 
-  return _make_page(Coretypes.PAGE_TAB.Home,[main],alert)
+  scripts = _appendInfiniteScroll(d,root_url)
+
+  return _make_page(Coretypes.PAGE_TAB.Home,[main],scripts,alert)
 
 def make_subscriptions(subscriptions,alert=None):
 
@@ -47,7 +49,7 @@ def make_subscriptions(subscriptions,alert=None):
 
     divs.append(main)
 
-  return _make_page(Coretypes.PAGE_TAB.Subscriptions,divs,alert)
+  return _make_page(Coretypes.PAGE_TAB.Subscriptions,divs,[],alert)
 
 _MAX_TEXT_LENGTH = 70 #Unix !
 _ELIPSES = " ..."
@@ -228,7 +230,41 @@ $(function () {
 
     tag += script(js_script,type="text/javascript")
 
-def _make_page(tab,divs,alert=None):
+def _appendInfiniteScroll(d,root_url):
+    _WRAPPER_ID = "cardsWrapper"
+
+    jquery = r"""
+//<![CDATA[ 
+$(window).scroll(function()
+{
+    if (this.nextUpdateLocation === undefined)
+    {
+        this.nextInterval = ($(document).height() * 0.9);
+        this.nextUpdateLocation = ($(document).height() * 0.4);
+    }
+
+    if($(window).scrollTop() > this.nextUpdateLocation)
+    {
+        this.nextUpdateLocation += this.nextInterval;
+
+        console.log("Initiating infinite scroll");
+        $.ajax({
+        url: '"""+root_url+"""',
+        success: function(html)
+        {
+            if(html)
+            { $('#"""+_WRAPPER_ID+"""').append(html); }else
+        }
+        });
+    }
+});
+//]]>  
+"""
+    d.attributes["id"] = _WRAPPER_ID
+    return [script(jquery,type="text/javascript")]
+
+
+def _make_page(tab,divs,scripts,alert=None):
   page = PyH('{Hive}')
 
   page.head << link(rel="shortcut icon", sizes="196x196",
@@ -298,6 +334,10 @@ def _make_page(tab,divs,alert=None):
     map(lambda d: data_div << d, divs)
 
   _addClickToExpand(page.body)
+
+  for script in scripts:
+      page.body << script
+
 
   return page.render()
 
