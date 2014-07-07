@@ -28,7 +28,7 @@ def defer_notifications(
 
 def get_items_and_deliver(userid,root_url):
     userinfo = Gae.Userinfo.get(userid)
-    items = Social.Subscriptions.get_timeline_items(userinfo,root_url)
+    items = Social.Subscriptions.get_timeline_items(userinfo,root_url,None)
     defer_notifications(
         userinfo.key().name(),
         items,

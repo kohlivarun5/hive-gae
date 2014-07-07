@@ -3,21 +3,29 @@ from Core import coretypes as Coretypes
 
 import logging
 
-def make_home(items,root_url,alert=None):
+def make_home(items,root_url,is_page_request,alert=None):
 
   # Loop and get each items display
 
   main = div(cl="row")
   d = main << div(style="margin-top:5px;")
 
+  last_creation_time = None
+
   for item in items:
+      last_creation_time = item.creation_time
       display = item.web_display(item.data,root_url)
       if display:
         d << _make_card(display)
 
-  scripts = _appendInfiniteScroll(d,root_url)
+  scripts = []
+  if last_creation_time is not None:
+    scripts = _appendInfiniteScroll(main,last_creation_time,root_url)
 
-  return _make_page(Coretypes.PAGE_TAB.Home,[main],scripts,alert)
+  if is_page_request:
+      return main.render()
+  else:
+    return _make_page(Coretypes.PAGE_TAB.Home,[main],scripts,alert)
 
 def make_subscriptions(subscriptions,alert=None):
 
@@ -230,13 +238,15 @@ $(function () {
 
     tag += script(js_script,type="text/javascript")
 
-def _appendInfiniteScroll(d,root_url):
-    _WRAPPER_ID = "cardsWrapper"
+LAST_CREATION_TIME_TAG='last_creation_time'
+
+def _appendInfiniteScroll(d,last_creation_time,root_url):
+    _WRAPPER_ID = "infiniteCardsWrapper"
+    _LAST_CREATION_TIME_ID="LAST_CREATED_DIV"
 
     jquery = r"""
 //<![CDATA[ 
-$(window).scroll(function()
-{
+$(window).scroll(function() {
     if (this.nextUpdateLocation === undefined)
     {
         this.nextInterval = ($(document).height() * 0.9);
@@ -247,20 +257,35 @@ $(window).scroll(function()
     {
         this.nextUpdateLocation += this.nextInterval;
 
+        var div = $('#"""+_WRAPPER_ID+"""');
+
         console.log("Initiating infinite scroll");
         $.ajax({
-        url: '"""+root_url+"""',
-        success: function(html)
-        {
-            if(html)
-            { $('#"""+_WRAPPER_ID+"""').append(html); }else
-        }
+          url: '"""+root_url+"""',
+
+          data: {
+            """+LAST_CREATION_TIME_TAG+""" : $('#"""+_LAST_CREATION_TIME_ID+"""').val(),
+          },
+
+          success: function(html) {
+
+              if(html)
+              {
+                $('#"""+_LAST_CREATION_TIME_ID+"""').remove();
+                $('#"""+_WRAPPER_ID+"""').append(html); 
+              }
+          }
         });
     }
 });
 //]]>  
 """
     d.attributes["id"] = _WRAPPER_ID
+    d << input(type="hidden",
+               value=last_creation_time,
+               name=_LAST_CREATION_TIME_ID,id=_LAST_CREATION_TIME_ID)
+
+
     return [script(jquery,type="text/javascript")]
 
 

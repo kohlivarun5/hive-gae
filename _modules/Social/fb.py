@@ -8,6 +8,7 @@ import logging
 import traceback
 
 import re
+import time 
 
 CALLBACK_LINK = "/fb_oauth2callback"
 
@@ -36,13 +37,22 @@ def get_access_token_from_code(code,root_url):
 
 def get_items(params):
 
-    userinfo = params.userinfo
+    userinfo = params.userinfo 
+
+    until_ts =  None
+    if params.start_time:
+        until_ts = time.mktime(params.start_time.timetuple())
+
     client = _client(userinfo)
+
+    logging.info(params)
+    logging.info(until_ts)
+
     if client is None:
       return []
 
     try:
-        news_feed = client.get_connections("me", "home",**{
+        request_object = {
                 'fields' : 
                 ",".join([
                 'from',
@@ -55,13 +65,22 @@ def get_items(params):
                 'likes.limit(1).summary(true)',
                 'comments.limit(1).summary(true)'
                 ])
-            })
+            }
+
+        if until_ts is not None:
+            request_object['until'] = until_ts
+
+        logging.info(request_object)
+        news_feed = client.get_connections("me", "home",**request_object)
+
     except facebook.GraphAPIError:
         logging.error("Failure to get FB news feed:{%s}"
                         %  (traceback.format_exc()))
         return []
 
     cards = []
+
+    #logging.debug(news_feed)
 
     for post in news_feed['data']:
       #if ('from' in post and 'category' in post['from']):

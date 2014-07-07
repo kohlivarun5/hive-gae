@@ -24,33 +24,48 @@ def get_service_info(userinfo,root_url):
     return Core.Coretypes.Login_service(name=name, info=Core.Coretypes.Subscribed())
 
 def get_access_token_from_code(code,root_url):
-    logging.debug("Getting FB info")
+    logging.debug("Getting IG info")
     access,_ = _get_auth(root_url).exchange_code_for_access_token(code)
     logging.info(access)
     return access
 
 
 def get_items(params):
+  return _get_items_impl(params)
 
+def _get_items_impl(params,media_id=None):
   client = _client(params.userinfo)
 
   if client is None:
     return []
 
-  logging.info(client)
-
-  media_feed, _ = client.user_media_feed()
+  #logging.info(client)
+  media_feed, _ = client.user_media_feed(max_id=media_id)
 
   cards = []
+
+  next_media_id = None
+
   for media in media_feed:
+
+    next_media_id = media.id
+
+    creation_time = pytz.utc.localize(media.created_time)
+
+    if params.start_time and creation_time > params.start_time:
+        continue
+
     cards.append(Core.Coretypes.Timeline_item(
-      creation_time=
-        pytz.utc.localize(media.created_time),
+      creation_time=creation_time,
       data=media,
       web_display=_card_display,
       glass_display=_glass_display))
 
-  logging.debug(cards)
+
+  if len(cards) == 0 and next_media_id is not None:
+    return _get_items_impl(params,next_media_id)
+  
+  # logging.debug(cards)
   return cards
 
 

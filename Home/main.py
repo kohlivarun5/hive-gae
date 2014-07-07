@@ -12,6 +12,8 @@ import Subscriptions
 import deferutil as DeferUtil
 from google.appengine.ext import deferred
 
+import iso8601
+
 import logging
 
 class Handler(webapp2.RequestHandler):
@@ -22,6 +24,15 @@ class Handler(webapp2.RequestHandler):
     """Render the page."""
 
     logging.info("Start rendering main page")
+
+    last_creation_time = self.request.get(Core.Html.LAST_CREATION_TIME_TAG)
+
+    if last_creation_time is not None and last_creation_time != "":
+        last_creation_time = iso8601.parse_date(last_creation_time)
+    else:
+        last_creation_time = None
+
+    logging.error(last_creation_time)
 
     userinfo = Apputil.Userinfo.get_from_request_safe(self)
     root_url = Apputil.Url.get_root_url(self)
@@ -34,7 +45,7 @@ class Handler(webapp2.RequestHandler):
             logging.info("Setting cache")
             self.response.headers['Cache-Control'] = "private,s-maxage=300,max-age=300"
 
-        html,items = _render_page(userinfo,root_url)
+        html,items = _render_page(userinfo,root_url,last_creation_time)
         self.response.out.write(html)
 
         #logging.debug(self.response)
@@ -48,12 +59,9 @@ class Handler(webapp2.RequestHandler):
             Gae.Userinfo.update_last_notify_time)
 
     else:
-
         self.response.out.write(
             Subscriptions.Main.render_page(userinfo,root_url,
                 "Login to a network to start using {Hive}!"))
-
-
 
   @Apputil.Oauth.auth_required
   def post(self):
@@ -77,6 +85,6 @@ class Handler(webapp2.RequestHandler):
 
 ########## PRIVATES ##################
 import Core
-def _render_page(userinfo,root_url):
-  items = Social.Subscriptions.get_timeline_items(userinfo,root_url)
-  return (Core.Html.make_home(items,root_url),items)
+def _render_page(userinfo,root_url,start_time):
+  items = Social.Subscriptions.get_timeline_items(userinfo,root_url,start_time)
+  return (Core.Html.make_home(items,root_url,(start_time is not None)),items)

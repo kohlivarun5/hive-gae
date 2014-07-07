@@ -38,12 +38,13 @@ def has_all_subscriptions(userinfo,root_url):
 
 
 from collections import OrderedDict
-def get_timeline_items(userinfo,root_url):
+def get_timeline_items(userinfo,root_url,start_time):
 
     items_map = {}
 
     params = Core.Coretypes.Timeline_search_params(
             userinfo=userinfo,
+            start_time=start_time,
             location=None)
 
     def get(svc):
@@ -62,10 +63,14 @@ def get_timeline_items(userinfo,root_url):
     for _, v in od.iteritems():
         items.append(v)
 
+    if start_time is not None:
+        items = filter(
+                lambda item:
+                item.creation_time < start_time ,
+                items)
+
     items.reverse()
     return items 
-
-
 
 def apply_activity(userinfo,root_url,svc_name,item,activity,activity_data):
     services = _get_subscriptions(userinfo,root_url)

@@ -10,7 +10,8 @@ Location      = namedtuple('Location',['lat','long'])
 
 Timeline_search_params = namedtuple('Timeline_search_params', [
       'userinfo'
-    , 'location',
+    , 'location'
+    , 'start_time'
 ])
 
 Timeline_item = namedtuple("Timeline_item", [
