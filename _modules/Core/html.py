@@ -139,7 +139,10 @@ def make_web_card(params):
         d1 = d1 << p(params.text,
                      cl="expandableText expandableTextBase")
 
-    d2 = a(img(src=params.photo,width="100%",height="100%"))
+    d2 = a(img(src=params.photo,
+               style="display:block;margin:auto;",
+               height="100%"))
+
     if params.post_link:
         d2.attributes['href'] = params.post_link
 
@@ -159,7 +162,10 @@ def make_glass_card(params):
         return None
 
     main = article(cl='photo')
-    main << img(src=params.photo,width="100%",height="100%")
+    main << img(src=params.photo,
+                style="display:block;margin:auto;",
+                height="100%")
+
     main << div(cl="overlay-gradient-tall-dark")
 
     #head = main << header()
