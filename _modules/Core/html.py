@@ -20,10 +20,10 @@ def make_home(items,root_url,is_page_request,alert=None):
 
   scripts = []
   if last_creation_time is not None:
-    scripts = _appendInfiniteScroll(main,last_creation_time,root_url)
+    scripts = _appendInfiniteScroll(main,d,last_creation_time,root_url)
 
   if is_page_request:
-      return main.render()
+      return d.render()
   else:
     return _make_page(Coretypes.PAGE_TAB.Home,[main],scripts,alert)
 
@@ -231,13 +231,9 @@ def _addClickToExpand(tag):
 
     js_script = r"""
 //<![CDATA[ 
-$(window).load(function(){
-$(function () {
-    $(".expandableTextBase").click(function () {
-        $(this).toggleClass("expandableText");
-        $(this).toggleClass("expandedText");
-    })
-});
+$(document).on('click', '.expandableTextBase', function () {
+    $(this).toggleClass("expandableText");
+    $(this).toggleClass("expandedText");
 });
 //]]>  
 """
@@ -246,7 +242,7 @@ $(function () {
 
 LAST_CREATION_TIME_TAG='last_creation_time'
 
-def _appendInfiniteScroll(d,last_creation_time,root_url):
+def _appendInfiniteScroll(main,d,last_creation_time,root_url):
     _WRAPPER_ID = "infiniteCardsWrapper"
     _LAST_CREATION_TIME_ID="LAST_CREATED_DIV"
 
@@ -286,7 +282,7 @@ $(window).scroll(function() {
 });
 //]]>  
 """
-    d.attributes["id"] = _WRAPPER_ID
+    main.attributes["id"] = _WRAPPER_ID
     d << input(type="hidden",
                value=last_creation_time,
                name=_LAST_CREATION_TIME_ID,id=_LAST_CREATION_TIME_ID)
