@@ -3,6 +3,8 @@ import Core
 from Social import fb as Fb
 from Social import ig as Ig
 
+import logging
+
 SERVICES = [
     Ig,
     Fb
@@ -63,12 +65,16 @@ def get_timeline_items(userinfo,root_url,start_time):
     for _, v in od.iteritems():
         items.append(v)
 
+    logging.info("Found %d items" % (len(items)))
+
     if start_time is not None:
         items = filter(
                 lambda item:
                 item.creation_time < start_time ,
                 items)
 
+    logging.info(start_time)
+    logging.info("Found %d items after filter" % (len(items)))
     items.reverse()
     return items 
 

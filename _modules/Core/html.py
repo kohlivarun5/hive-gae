@@ -253,35 +253,67 @@ def _appendInfiniteScroll(d,last_creation_time,root_url):
     jquery = r"""
 //<![CDATA[ 
 $(window).scroll(function() {
-    if (this.nextUpdateLocation === undefined)
+    if (this.params === undefined)
     {
-        this.nextInterval = ($(document).height() * 0.9);
-        this.nextUpdateLocation = ($(document).height() * 0.4);
+        this.params = {};
+        this.params.extensionFactor = 0.6;
+        this.params.nextUpdateLocation 
+            = ($(document).height() * this.params.extensionFactor);
+        this.params.is_loading = false;
     }
 
-    if($(window).scrollTop() > this.nextUpdateLocation)
+    // console.log($(window).scrollTop());
+    // console.log(this.params);
+    // console.log($(document).height());
+
+    var params = this.params;
+
+    if(!params.is_loading && $(window).scrollTop() > params.nextUpdateLocation)
     {
-        this.nextUpdateLocation += this.nextInterval;
+        params.is_loading = true;
 
         var div = $('#"""+_WRAPPER_ID+"""');
 
         console.log("Initiating infinite scroll");
-        $.ajax({
-          url: '"""+root_url+"""',
 
-          data: {
-            """+LAST_CREATION_TIME_TAG+""" : $('#"""+_LAST_CREATION_TIME_ID+"""').val(),
-          },
+        var last_creation_time = $('#"""+_LAST_CREATION_TIME_ID+"""').val();
 
-          success: function(html) {
+        if (last_creation_time) 
+        {
+            var data = {
+                """+LAST_CREATION_TIME_TAG+""" : last_creation_time
+            };
 
-              if(html)
-              {
-                $('#"""+_LAST_CREATION_TIME_ID+"""').remove();
-                $('#"""+_WRAPPER_ID+"""').append(html); 
+            $.ajax({
+              url: '"""+root_url+"""',
+              data: data,
+              success: function(html) {
+
+                  params.is_loading = false;
+                  if(html)
+                  {
+                    console.log("Got html");
+
+                    var before =  $(document).height();
+
+                    $('#"""+_LAST_CREATION_TIME_ID+"""').remove();
+                    $('#"""+_WRAPPER_ID+"""').append(html); 
+
+                    var after =  $(document).height();
+                    var diff = after - before;
+
+                    if (diff === 0)
+                    { params.is_loading = true; }
+
+                    params.nextUpdateLocation += diff * params.extensionFactor;
+
+                    // console.log(params.nextUpdateLocation);
+                    // console.log(params.extensionFactor);
+                    // console.log($(document).height());
+                  }
               }
-          }
-        });
+            });
+        }
     }
 });
 //]]>  
