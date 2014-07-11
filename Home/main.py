@@ -41,9 +41,9 @@ class Handler(webapp2.RequestHandler):
 
     if has_all_subs or Social.Subscriptions.has_some_subscription(userinfo,root_url):
 
-        if has_all_subs:
-            logging.info("Setting cache")
-            self.response.headers['Cache-Control'] = "private,s-maxage=300,max-age=300"
+        #if has_all_subs:
+        #    logging.info("Setting cache")
+        #    self.response.headers['Cache-Control'] = "private,s-maxage=300,max-age=300"
 
         html,items = _render_page(userinfo,root_url,last_creation_time)
         self.response.out.write(html)

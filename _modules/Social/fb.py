@@ -35,12 +35,11 @@ def get_access_token_from_code(code,root_url):
     return access["access_token"]
 
 
-def get_items(params):
+def get_items(params,until_ts=None):
 
     userinfo = params.userinfo 
 
-    until_ts =  None
-    if params.start_time:
+    if until_ts is None and params.start_time:
         until_ts = time.mktime(params.start_time.timetuple())
 
     client = _client(userinfo)
@@ -72,6 +71,7 @@ def get_items(params):
 
         logging.info(request_object)
         news_feed = client.get_connections("me", "home",**request_object)
+        logging.info(news_feed)
 
     except facebook.GraphAPIError:
         logging.error("Failure to get FB news feed:{%s}"
@@ -82,7 +82,10 @@ def get_items(params):
 
     #logging.debug(news_feed)
 
+    last_creation_time = None
+    
     for post in news_feed['data']:
+      last_creation_time = dateutil.parser.parse(post["created_time"])
       #if ('from' in post and 'category' in post['from']):
       #  continue
       if 'full_picture' in post:
@@ -91,13 +94,17 @@ def get_items(params):
                post['full_picture'].replace("_s.","_n.").replace("_t.","_n."))
 
       cards.append(Core.Coretypes.Timeline_item(
-                creation_time=
-                  dateutil.parser.parse(post["created_time"]),
+                creation_time=last_creation_time,
                 data=post,
                 web_display=_card_display,
                 glass_display=_glass_display))
 
     logging.debug(cards)
+
+    if len(cards) ==0 and last_creation_time is not None:
+        return get_items(params,last_creation_time)
+
+
     return cards
 
 _LIKE_ACTIVITY='like'
