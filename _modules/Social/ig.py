@@ -42,6 +42,8 @@ def _get_items_impl(params,media_id=None):
   #logging.info(client)
   media_feed, _ = client.user_media_feed(max_id=media_id)
 
+  logging.info(media_feed)
+
   cards = []
 
   next_media_id = None
@@ -52,7 +54,7 @@ def _get_items_impl(params,media_id=None):
 
     creation_time = pytz.utc.localize(media.created_time)
 
-    if params.start_time and creation_time > params.start_time:
+    if params.start_time and creation_time >= params.start_time:
         continue
 
     cards.append(Core.Coretypes.Timeline_item(

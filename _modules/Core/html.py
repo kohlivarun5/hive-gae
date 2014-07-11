@@ -20,10 +20,10 @@ def make_home(items,root_url,is_page_request,alert=None):
 
   scripts = []
   if last_creation_time is not None:
-    scripts = _appendInfiniteScroll(main,last_creation_time,root_url)
+    scripts = _appendInfiniteScroll(main,d,last_creation_time,root_url)
 
   if is_page_request:
-      return main.render()
+      return d.render()
   else:
     return _make_page(Coretypes.PAGE_TAB.Home,[main],scripts,alert)
 
@@ -137,7 +137,8 @@ def make_web_card(params):
         d1 = d1 << td(style="padding:3px 5px 2px 5px")
 
         d1 = d1 << p(params.text,
-                     cl="expandableText expandableTextBase")
+                     cl="expandableText expandableTextBase",
+                     onClick="")
 
     d2 = a(img(src=params.photo,
                style="display:block;margin:auto;",
@@ -219,6 +220,12 @@ def _addClickToExpand(tag):
     white-space: nowrap;
     overflow: hidden;
 }
+
+.loadmoreajaxloaderDiv {
+    postion:absolute;
+    left: 50%;
+}
+
 """
 #.expandableText:hover {
 #    text-decoration:none;
@@ -231,13 +238,9 @@ def _addClickToExpand(tag):
 
     js_script = r"""
 //<![CDATA[ 
-$(window).load(function(){
-$(function () {
-    $(".expandableTextBase").click(function () {
-        $(this).toggleClass("expandableText");
-        $(this).toggleClass("expandedText");
-    })
-});
+$("body").on('click', '.expandableTextBase', function () {
+    $(this).toggleClass("expandableText");
+    $(this).toggleClass("expandedText");
 });
 //]]>  
 """
@@ -246,7 +249,7 @@ $(function () {
 
 LAST_CREATION_TIME_TAG='last_creation_time'
 
-def _appendInfiniteScroll(d,last_creation_time,root_url):
+def _appendInfiniteScroll(main,d,last_creation_time,root_url):
     _WRAPPER_ID = "infiniteCardsWrapper"
     _LAST_CREATION_TIME_ID="LAST_CREATED_DIV"
 
@@ -262,10 +265,6 @@ $(window).scroll(function() {
         this.params.is_loading = false;
     }
 
-    // console.log($(window).scrollTop());
-    // console.log(this.params);
-    // console.log($(document).height());
-
     var params = this.params;
 
     if(!params.is_loading && $(window).scrollTop() > params.nextUpdateLocation)
@@ -273,8 +272,8 @@ $(window).scroll(function() {
         params.is_loading = true;
 
         var div = $('#"""+_WRAPPER_ID+"""');
-
         console.log("Initiating infinite scroll");
+        $('.loadmoreajaxloader').show();
 
         var last_creation_time = $('#"""+_LAST_CREATION_TIME_ID+"""').val();
 
@@ -290,10 +289,10 @@ $(window).scroll(function() {
               success: function(html) {
 
                   params.is_loading = false;
+                  $('.loadmoreajaxloader').hide();
                   if(html)
                   {
                     console.log("Got html");
-
                     var before =  $(document).height();
 
                     $('#"""+_LAST_CREATION_TIME_ID+"""').remove();
@@ -302,14 +301,7 @@ $(window).scroll(function() {
                     var after =  $(document).height();
                     var diff = after - before;
 
-                    if (diff === 0)
-                    { params.is_loading = true; }
-
                     params.nextUpdateLocation += diff * params.extensionFactor;
-
-                    // console.log(params.nextUpdateLocation);
-                    // console.log(params.extensionFactor);
-                    // console.log($(document).height());
                   }
               }
             });
@@ -318,7 +310,8 @@ $(window).scroll(function() {
 });
 //]]>  
 """
-    d.attributes["id"] = _WRAPPER_ID
+
+    main.attributes["id"] = _WRAPPER_ID
     d << input(type="hidden",
                value=last_creation_time,
                name=_LAST_CREATION_TIME_ID,id=_LAST_CREATION_TIME_ID)
@@ -396,11 +389,17 @@ def _make_page(tab,divs,scripts,alert=None):
   if divs:
     map(lambda d: data_div << d, divs)
 
+  page.body << div(img(cl="loadmoreajaxloader",
+                   style="display:block;margin:auto",
+                   src="/static/images/ajax-loader.gif",
+                   width="35",
+                   height="35"),
+                   cl="loadmoreajaxloaderDiv")
+
   _addClickToExpand(page.body)
 
   for script in scripts:
       page.body << script
-
 
   return page.render()
 
