@@ -137,7 +137,8 @@ def make_web_card(params):
         d1 = d1 << td(style="padding:3px 5px 2px 5px")
 
         d1 = d1 << p(params.text,
-                     cl="expandableText expandableTextBase")
+                     cl="expandableText expandableTextBase",
+                     onClick="")
 
     d2 = a(img(src=params.photo,
                style="display:block;margin:auto;",
@@ -231,7 +232,7 @@ def _addClickToExpand(tag):
 
     js_script = r"""
 //<![CDATA[ 
-$(document).on('click', '.expandableTextBase', function () {
+$("body").on('click', '.expandableTextBase', function () {
     $(this).toggleClass("expandableText");
     $(this).toggleClass("expandedText");
 });
