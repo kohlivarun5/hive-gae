@@ -220,6 +220,12 @@ def _addClickToExpand(tag):
     white-space: nowrap;
     overflow: hidden;
 }
+
+.loadmoreajaxloaderDiv {
+    postion:absolute;
+    left: 50%;
+}
+
 """
 #.expandableText:hover {
 #    text-decoration:none;
@@ -259,10 +265,11 @@ $(window).scroll(function() {
     if($(window).scrollTop() > this.nextUpdateLocation)
     {
         this.nextUpdateLocation += this.nextInterval;
-
         var div = $('#"""+_WRAPPER_ID+"""');
 
         console.log("Initiating infinite scroll");
+        $('.loadmoreajaxloader').show();
+
         $.ajax({
           url: '"""+root_url+"""',
 
@@ -276,6 +283,7 @@ $(window).scroll(function() {
               {
                 $('#"""+_LAST_CREATION_TIME_ID+"""').remove();
                 $('#"""+_WRAPPER_ID+"""').append(html); 
+                $('.loadmoreajaxloader').hide();
               }
           }
         });
@@ -283,6 +291,7 @@ $(window).scroll(function() {
 });
 //]]>  
 """
+
     main.attributes["id"] = _WRAPPER_ID
     d << input(type="hidden",
                value=last_creation_time,
@@ -361,11 +370,17 @@ def _make_page(tab,divs,scripts,alert=None):
   if divs:
     map(lambda d: data_div << d, divs)
 
+  page.body << div(img(cl="loadmoreajaxloader",
+                   style="display:block;margin:auto",
+                   src="/static/images/ajax-loader.gif",
+                   width="35",
+                   height="35"),
+                   cl="loadmoreajaxloaderDiv")
+
   _addClickToExpand(page.body)
 
   for script in scripts:
       page.body << script
-
 
   return page.render()
 
