@@ -28,7 +28,8 @@ def make_home(items,root_url,is_page_request,alert=None):
   if is_page_request:
       return d.render()
   else:
-    return _make_page(Coretypes.PAGE_TAB.Home,[main],scripts,alert)
+    return _make_page(Coretypes.PAGE_TAB.Home,
+                      [main],scripts,alert,addLoader=True)
 
 def make_subscriptions(subscriptions,alert=None):
 
@@ -276,10 +277,13 @@ $(window).scroll(function() {
 
         var div = $('#"""+_WRAPPER_ID+"""');
         console.log("Initiating infinite scroll");
-        $('.loadmoreajaxloader').show();
 
         var last_creation_time = $('#"""+_LAST_CREATION_TIME_ID+"""').val();
+        if (last_creation_time === undefined)
+        { return; }
 
+        $('.loadmoreajaxloaderDiv').show();
+        console.log(last_creation_time)
         if (last_creation_time) 
         {
             var data = {
@@ -292,7 +296,7 @@ $(window).scroll(function() {
               success: function(html) {
 
                   params.is_loading = false;
-                  $('.loadmoreajaxloader').hide();
+                  $('.loadmoreajaxloaderDiv').hide();
                   if(html)
                   {
                     console.log("Got html");
@@ -306,6 +310,11 @@ $(window).scroll(function() {
 
                     params.nextUpdateLocation += diff * params.extensionFactor;
                   }
+              },
+              error : function(){
+                  console.log("Got error");
+                  params.is_loading = true;
+                  $('.loadmoreajaxloaderDiv').hide();
               }
             });
         }
@@ -323,7 +332,7 @@ $(window).scroll(function() {
     return [script(jquery,type="text/javascript")]
 
 
-def _make_page(tab,divs,scripts,alert=None):
+def _make_page(tab,divs,scripts,alert=None,addLoader=False):
   page = PyH('{Hive}')
 
   page.head << link(rel="shortcut icon", sizes="196x196",
@@ -392,21 +401,25 @@ def _make_page(tab,divs,scripts,alert=None):
   if divs:
     map(lambda d: data_div << d, divs)
 
-  reload_pill = img(cl="loadmoreajaxloader",
-                     style="display:block;margin:auto",
-                     src="/static/images/ajax-loader.gif",
-                     width="35",
-                     height="35")
+  if addLoader:
+ 
+   reload_pill = img(cl="loadmoreajaxloader",
+                      style="display:block;margin:auto",
+                      src="/static/images/ajax-loader.gif",
+                      width="35",
+                      height="35")
+ 
+   reload_row = div(div(div(_make_card(reload_pill,
+                                       is_free_span=True), 
+                       style="margin-top:5px;"),
+                       cl="row",
+                       style="margin-left:0;"),
+                    cl="container loadmoreajaxloaderDiv")
 
-  reload_row = div(div(div(_make_card(reload_pill,
-                                      is_free_span=True), 
-                      style="margin-top:5px;"),
-                      cl="row",
-                      style="margin-left:0;"),
-                   cl="container loadmoreajaxloaderDiv")
+
+   page.body << reload_row
 
 
-  page.body << reload_row
 
   _addClickToExpand(page.body)
 

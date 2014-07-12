@@ -39,10 +39,11 @@ def _get_items_impl(params,media_id=None):
   if client is None:
     return []
 
-  #logging.info(client)
-  media_feed, _ = client.user_media_feed(max_id=media_id)
+  logging.info(media_id)
+  media_feed, next_ptr = client.user_media_feed(max_id=media_id)
 
   logging.info(media_feed)
+  logging.info(next_ptr)
 
   cards = []
 
@@ -63,8 +64,10 @@ def _get_items_impl(params,media_id=None):
       web_display=_card_display,
       glass_display=_glass_display))
 
+  if next_ptr is None or len(cards) > 0:
+    return cards
 
-  if len(cards) == 0 and next_media_id is not None:
+  if len(cards) == 0:
     return _get_items_impl(params,next_media_id)
   
   # logging.debug(cards)
