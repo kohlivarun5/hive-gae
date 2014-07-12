@@ -214,7 +214,7 @@ def _addClickToExpand(tag):
     width:100%;
     margin:2px;
     word-wrap:break-word;
-    font-size:110%;
+    font-size:120%;
     font-family:monospace;
     color:#657b83;
     padding:2px
