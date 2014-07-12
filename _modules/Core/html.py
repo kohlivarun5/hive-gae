@@ -63,8 +63,11 @@ def make_subscriptions(subscriptions,alert=None):
 
   return _make_page(Coretypes.PAGE_TAB.Subscriptions,divs,[],alert)
 
-_MAX_TEXT_LENGTH = 70 #Unix !
+_MAX_TEXT_LENGTH = 2*70 #Unix !
 _ELIPSES = " ..."
+
+def _is_longer_than_limit(text):
+    return len(text) > _MAX_TEXT_LENGTH
 
 def _format_text(text):
 
@@ -140,8 +143,15 @@ def make_web_card(params):
         d1 = d << tr()
         d1 = d1 << td(style="padding:7px 10px 10px 10px")
 
+        is_longer_than_limit = _is_longer_than_limit(params.text)
+
+        cl_prop="expandableTextBase"
+        if is_longer_than_limit:
+            cl_prop += " expandableText"
+
+
         d1 = d1 << p(params.text,
-                     cl="expandableText expandableTextBase",
+                     cl=cl_prop,
                      onClick="")
 
     d2 = a(img(src=params.photo,
