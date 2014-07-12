@@ -138,7 +138,7 @@ def make_web_card(params):
 
     if params.text:
         d1 = d << tr()
-        d1 = d1 << td(style="padding:3px 5px 2px 5px")
+        d1 = d1 << td(style="padding:7px 10px 10px 10px")
 
         d1 = d1 << p(params.text,
                      cl="expandableText expandableTextBase",
