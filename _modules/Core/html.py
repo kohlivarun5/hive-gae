@@ -12,11 +12,14 @@ def make_home(items,root_url,is_page_request,alert=None):
 
   last_creation_time = None
 
+  count = 0
+
   for item in items:
       last_creation_time = item.creation_time
       display = item.web_display(item.data,root_url)
-      if display:
+      if display:# and count < 5:
         d << _make_card(display)
+      count += 1
 
   scripts = []
   if last_creation_time is not None:
@@ -389,12 +392,21 @@ def _make_page(tab,divs,scripts,alert=None):
   if divs:
     map(lambda d: data_div << d, divs)
 
-  page.body << div(img(cl="loadmoreajaxloader",
-                   style="display:block;margin:auto",
-                   src="/static/images/ajax-loader.gif",
-                   width="35",
-                   height="35"),
-                   cl="loadmoreajaxloaderDiv")
+  reload_pill = img(cl="loadmoreajaxloader",
+                     style="display:block;margin:auto",
+                     src="/static/images/ajax-loader.gif",
+                     width="35",
+                     height="35")
+
+  reload_row = div(div(div(_make_card(reload_pill,
+                                      is_free_span=True), 
+                      style="margin-top:5px;"),
+                      cl="row",
+                      style="margin-left:0;"),
+                   cl="container loadmoreajaxloaderDiv")
+
+
+  page.body << reload_row
 
   _addClickToExpand(page.body)
 
@@ -405,8 +417,11 @@ def _make_page(tab,divs,scripts,alert=None):
 
 
 
-def _make_card(display):
-  main = div(cl="span4")
+def _make_card(display,is_free_span=None):
+  main = (div(cl="span4")
+          if is_free_span is None
+          else div(style="span8"))
+
   d = main << table(style="background-color:#F5F5F9;box-shadow: 5px 5px 10px 5px #888;",
                     cl="table table-bordered")
   d = d << tr()
@@ -420,3 +435,4 @@ def add_activity_inputs(parent,name,item,activity):
     parent << input(type="hidden", name="item", value=item)
     parent << input(type="hidden", name="activity", value=activity)
     return parent
+

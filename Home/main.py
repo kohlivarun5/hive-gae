@@ -32,7 +32,7 @@ class Handler(webapp2.RequestHandler):
     else:
         last_creation_time = None
 
-    logging.error(last_creation_time)
+    logging.info(last_creation_time)
 
     userinfo = Apputil.Userinfo.get_from_request_safe(self)
     root_url = Apputil.Url.get_root_url(self)
