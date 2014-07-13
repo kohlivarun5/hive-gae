@@ -121,7 +121,7 @@ def make_web_card(params):
     d = main << a()
 
     if params.poster:
-        d1 = d << p()
+        d1 = d << p(style="margin:0 0 0 0;")
 
         d2 = d1 << a(b(params.poster))
         if params.poster_link:
@@ -138,7 +138,7 @@ def make_web_card(params):
 
     if params.text:
         d1 = d << tr()
-        d1 = d1 << td(style="padding:2px 10px 5px 10px")
+        d1 = d1 << td(style="padding:2px 10px 2px 10px")
 
         is_longer_than_limit = _is_longer_than_limit(params.text)
 
@@ -152,7 +152,8 @@ def make_web_card(params):
                      onClick="")
 
     d2 = a(img(src=params.photo,
-               style="display:block;margin:auto;",
+               style="display:block;margin:10 auto auto auto;\
+                      box-shadow: 0px 0px 12px 0px #646464;",
                height="100%"))
 
     if params.post_link:
@@ -217,17 +218,18 @@ def _addClickToExpand(tag):
     text-overflow: ellipsis;
     display: block;
     width:100%;
-    margin:2px;
     word-wrap:break-word;
     font-size:120%;
     font-family:monospace;
     color:#657b83;
-    padding:2px
+    padding:2px;
+    margin:0 0 0 0;
 }
 
 .expandableText {
     white-space: nowrap;
     overflow: hidden;
+    margin:0 0 5px 0;
 }
 
 .loadmoreajaxloaderDiv {
@@ -363,6 +365,15 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 .table td {
   border-top:0px;
 }
+
+.table th, .table td {
+  padding:0px;
+}
+
+.p {
+  margin:0 0 0 0;
+}
+
 """
 
   page.head << style(css_style,type="text/css")
@@ -430,9 +441,11 @@ def _make_card(display,is_free_span=None):
   main = (div(cl="span4")
           if is_free_span is None
           else div(style="span8"))
-  d = main << table(style="background:#F1ECDE url('/static/images/card-background.png') repeat;\
-                          box-shadow: 5px 5px 15px 2px #646464;",
-                    cl="table")
+  d = main << table(cl="table",
+                    style="background:#F1ECDE \
+                          url('/static/images/card-background.png') repeat;\
+                          margin-bottom:40px;\
+                          box-shadow: 2px 2px 18px 2px #646464;")
 
   d = d << tr()
   d = d << td(display,style="padding:10px")
