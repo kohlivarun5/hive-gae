@@ -12,14 +12,11 @@ def make_home(items,root_url,is_page_request,alert=None):
 
   last_creation_time = None
 
-  count = 0
-
   for item in items:
       last_creation_time = item.creation_time
       display = item.web_display(item.data,root_url)
-      if display:# and count < 5:
+      if display:
         d << _make_card(display)
-      count += 1
 
   scripts = []
   if last_creation_time is not None:
@@ -63,29 +60,29 @@ def make_subscriptions(subscriptions,alert=None):
 
   return _make_page(Coretypes.PAGE_TAB.Subscriptions,divs,[],alert)
 
-_MAX_TEXT_LENGTH = 2*70 #Unix !
+_MAX_TEXT_LENGTH = 80 #Unix !
 _ELIPSES = " ..."
 
 def _is_longer_than_limit(text):
     return len(text) > _MAX_TEXT_LENGTH
 
-def _format_text(text):
-
-    if len(text) <= _MAX_TEXT_LENGTH:
-        return text
-
-    # Text is greater than length, first we split words, then traverse
-    # THe first word do exceed limit is dropped and we put elipses and return!
-    words = text.split()
-    text = ""
-    for word in words:
-        word_len = len(word)
-        text_len = len(text)
-        if (word_len + text_len) > _MAX_TEXT_LENGTH:
-            return text + _ELIPSES
-        else:
-            text = text + " " + word
-    return text
+#def _format_text(text):
+#
+#    if len(text) <= _MAX_TEXT_LENGTH:
+#        return text
+#
+#    # Text is greater than length, first we split words, then traverse
+#    # THe first word do exceed limit is dropped and we put elipses and return!
+#    words = text.split()
+#    text = ""
+#    for word in words:
+#        word_len = len(word)
+#        text_len = len(text)
+#        if (word_len + text_len) > _MAX_TEXT_LENGTH:
+#            return text + _ELIPSES
+#        else:
+#            text = text + " " + word
+#    return text
 
 ACTIVITY_POST_ROUTE = '/'
 def _make_activities(activities):
@@ -131,17 +128,17 @@ def make_web_card(params):
             d2.attributes['href'] = params.poster_link
 
        
-    d = d << table(cl="table table-bordered",
+    d = d << table(cl="table",
                     style="\
                     table-layout:fixed;\
-                    background-color:#F6F7F8;\
+                    background:#F1ECDE url('/static/images/card-background.png') repeat;\
                     margin-bottom:10px;\
                     ",
                    )
 
     if params.text:
         d1 = d << tr()
-        d1 = d1 << td(style="padding:7px 10px 10px 10px")
+        d1 = d1 << td(style="padding:2px 10px 5px 10px")
 
         is_longer_than_limit = _is_longer_than_limit(params.text)
 
@@ -200,8 +197,6 @@ def make_glass_card(params):
 
     d1 << ("@"+(params.poster.replace(" ", "")))
 
-    #logging.info(main.render())
-
     return main.render()
 
 ###################################
@@ -241,12 +236,6 @@ def _addClickToExpand(tag):
 }
 
 """
-#.expandableText:hover {
-#    text-decoration:none;
-#    border-bottom: 1px solid #657b83;
-#}
-#
-#"""
 
     tag += style(css_style,type="text/css")
 
@@ -365,8 +354,20 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
       '/static/bootstrap/js/bootstrap.min.js'
       )
 
+  css_style = """
+* {
+  -webkit-border-radius: 0 !important;
+     -moz-border-radius: 0 !important;
+          border-radius: 0 !important;
+}
+.table td {
+  border-top:0px;
+}
+"""
 
-  page.body.attributes["style"] = "background-color:#F1ECDE"
+  page.head << style(css_style,type="text/css")
+  
+  page.body.attributes["style"] = "background-color:#dedede"
 
   def _create_tab(name,link,is_active):
     tab = li(a(name,href=link))
@@ -388,20 +389,6 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
     return main
   
-  #def _make_navbar_2():
-  #  main = div(cl="navbar navbar-inverse navbar-fixed-top")
-  #  navbar = main << div(cl="container")
-  #  brand  = navbar << div(cl="navbar navbar-header")
-  #  brand << a((b("{Hive}") + " : " + i("Your social hub")),
-  #             cl="navbar navbar-brand", href="#",style="padding-right:1cm;")
-
-  #  tabs = navbar << div(cl="navbar")
-  #  tabs = tabs << ul(cl="nav navbar-nav",id="bs-example-navbar-collapse-1")
-  #  tabs << li(a("Home",href="/"),cl="active")
-  #  tabs << li(a("Subscriptions",href="/subscriptions"),cl="active")
-
-  #  return main
-
   page << _make_navbar()
   data_div = page << div(cl="container")
 
@@ -430,7 +417,6 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
    page.body << reload_row
 
 
-
   _addClickToExpand(page.body)
 
   for script in scripts:
@@ -444,9 +430,10 @@ def _make_card(display,is_free_span=None):
   main = (div(cl="span4")
           if is_free_span is None
           else div(style="span8"))
+  d = main << table(style="background:#F1ECDE url('/static/images/card-background.png') repeat;\
+                          box-shadow: 5px 5px 15px 2px #646464;",
+                    cl="table")
 
-  d = main << table(style="background-color:#F5F5F9;box-shadow: 5px 5px 10px 5px #888;",
-                    cl="table table-bordered")
   d = d << tr()
   d = d << td(display,style="padding:10px")
 
@@ -458,4 +445,3 @@ def add_activity_inputs(parent,name,item,activity):
     parent << input(type="hidden", name="item", value=item)
     parent << input(type="hidden", name="activity", value=activity)
     return parent
-
