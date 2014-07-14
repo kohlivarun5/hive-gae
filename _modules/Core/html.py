@@ -438,7 +438,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
 
 def _make_card(display,is_free_span=None):
-  main = (div(cl="span4")
+  main = (div(cl="span6")
           if is_free_span is None
           else div(style="span8"))
   d = main << table(cl="table",
