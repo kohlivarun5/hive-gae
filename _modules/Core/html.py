@@ -445,7 +445,7 @@ def _make_card(display,is_free_span=None):
                     style="background:#F1ECDE \
                           url('/static/images/card-background.png') repeat;\
                           margin-bottom:40px;\
-                          box-shadow: 2px 2px 8px 0px #646464;")
+                          box-shadow: 0px 0px 7px 0px #646464;")
 
   d = d << tr()
   d = d << td(display,style="padding:10px")
