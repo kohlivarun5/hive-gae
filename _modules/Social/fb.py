@@ -207,8 +207,15 @@ def _card_display(data,root_url):
 
 def _glass_display(data,is_notify,root_url):
     params = _card_params(data,root_url)
-    return Glass.Card.of_params(
+
+
+    # Don't add links to FB glass!
+    params = params._replace(**{'poster_link':None, 'post_link' :None})
+
+    card = Glass.Card.of_params(
             NAME,
             params,
             is_notify,
             Core.Html.make_glass_card(params))
+
+    return card
