@@ -401,7 +401,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
     return main
   
   page << _make_navbar()
-  data_div = page << div(cl="container",style="width:1000px; margin:0 auto;")
+  data_div = page << div(cl="container",style="margin:0 auto;")
 
   if alert:
     data_div << div(alert,cl="alert alert-info")
@@ -438,7 +438,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
 
 def _make_card(display,is_free_span=None):
-  main = (div(cl="span5")
+  main = (div(cl="span6")
           if is_free_span is None
           else div(style="span"))
   d = main << table(cl="table",
