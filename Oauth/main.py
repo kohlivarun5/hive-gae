@@ -108,3 +108,29 @@ class IgCallbackHandler(webapp2.RequestHandler):
     
     _render_after_subscription(self,userinfo,root_url,
             "Subscribed to Instagram!")
+
+class TumblrCallbackHandler(webapp2.RequestHandler):
+  """Callback called by ig authentication"""
+
+  def get(self):
+    """Get the user's oauth info"""
+
+    oauth_token = self.request.get("oauth_token")
+    oauth_verifier = self.request.get("oauth_verifier")
+
+    userid = Core.Session.load_session_userid(self)
+    userinfo = Gae.Userinfo.get(userid)
+    assert userinfo is not None
+
+    root_url = Apputil.Url.get_root_url(self)
+    access_token = Social.Tumblr.get_access_token_from_code(oauth_token,
+                                                            oauth_verifier,
+                                                            userinfo,root_url)
+
+    logging.info(access_token)
+    userinfo.tumblr_oauth_token =  access_token['oauth_token']
+    userinfo.tumblr_oauth_secret = access_token['oauth_token_secret']
+    Gae.Userinfo.put(userinfo)
+    
+    _render_after_subscription(self,userinfo,root_url,
+            "Subscribed to Tumblr!")

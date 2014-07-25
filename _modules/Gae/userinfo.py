@@ -18,14 +18,17 @@ class Userinfo(db.Model):
   update_time = db.DateTimeProperty(auto_now=True)
 
   twitter_oauth_token_key = db.StringProperty(required=False)
-  twitter_oauth_token_key = db.StringProperty(required=False)
   twitter_oauth_token_secret = db.StringProperty(required=False)
-  twitter_oauth_verifier = db.StringProperty(required=False)
   twitter_access_token = db.StringProperty(required=False)
   twitter_access_secret = db.StringProperty(required=False)
 
   ig_access_token = db.StringProperty(required=False)
   fb_access_token = db.StringProperty(required=False)
+
+  tumblr_request_token = db.StringProperty(required=False)
+  tumblr_request_secret = db.StringProperty(required=False)
+  tumblr_oauth_token = db.StringProperty(required=False)
+  tumblr_oauth_secret = db.StringProperty(required=False)
 
   last_notify_time = db.DateTimeProperty(required=False)
 

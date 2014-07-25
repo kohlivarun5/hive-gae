@@ -2,12 +2,14 @@ import Core
 
 from Social import fb as Fb
 from Social import ig as Ig
+from Social import tumblr as Tumblr
 
 import logging
 
 SERVICES = [
     Ig,
-    Fb
+    Fb,
+    Tumblr
 ]
 
 def get_subscriptions(userinfo,root_url):

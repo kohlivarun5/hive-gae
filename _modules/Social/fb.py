@@ -71,7 +71,7 @@ def get_items(params,until_ts=None):
 
         logging.info(request_object)
         news_feed = client.get_connections("me", "home",**request_object)
-        logging.info(news_feed)
+        logging.debug(news_feed)
 
     except facebook.GraphAPIError:
         logging.error("Failure to get FB news feed:{%s}"
