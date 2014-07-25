@@ -85,6 +85,7 @@ def get_items(params,offset=None):
                 glass_display=_glass_display))
 
     logging.debug(cards)
+    logging.debug(count)
 
     if len(cards) == 0 and count > 0:
        return get_items(params,(offset+count if offset is not None else count))
@@ -145,9 +146,9 @@ def _client(userinfo):
     return None
   else:
 
-    logging.info(userinfo.tumblr_request_secret)
-    logging.info(userinfo.tumblr_oauth_token)
-    logging.info(userinfo.tumblr_oauth_secret)
+    logging.debug(userinfo.tumblr_request_secret)
+    logging.debug(userinfo.tumblr_oauth_token)
+    logging.debug(userinfo.tumblr_oauth_secret)
 
     client = pytumblr.TumblrRestClient(
                 _APPLICATION_ID,

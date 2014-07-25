@@ -127,7 +127,7 @@ class TumblrCallbackHandler(webapp2.RequestHandler):
                                                             oauth_verifier,
                                                             userinfo,root_url)
 
-    logging.info(access_token)
+    logging.debug(access_token)
     userinfo.tumblr_oauth_token =  access_token['oauth_token']
     userinfo.tumblr_oauth_secret = access_token['oauth_token_secret']
     Gae.Userinfo.put(userinfo)
