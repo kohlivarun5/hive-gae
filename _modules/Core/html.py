@@ -401,7 +401,11 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
     return main
   
   page << _make_navbar()
-  data_div = page << div(cl="container",style="margin:0 auto;")
+  data_div = page << div(cl="container",
+                         style="display:block;\
+                                margin-left:auto;\
+                                margin-right:auto;\
+                                max-width:750px;")
 
   if alert:
     data_div << div(alert,cl="alert alert-info")
@@ -438,9 +442,9 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
 
 def _make_card(display,is_free_span=None):
-  main = (div(cl="span6")
+  main = (div(cl="span")
           if is_free_span is None
-          else div(style="span"))
+          else div(cl="span"))
   d = main << table(cl="table",
                     style="background:#F1ECDE \
                           url('/static/images/card-background.png') repeat;\
