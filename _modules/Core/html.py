@@ -152,7 +152,7 @@ def make_web_card(params):
                      onClick="")
 
     d2 = a(img(src=params.photo,
-               style="display:block;margin:10 auto auto auto;\
+               style="max-height:430px;display:block;margin:10 auto auto auto;\
                       box-shadow: 0px 0px 12px 0px #646464;",
                height="100%"))
 
@@ -421,8 +421,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
                       width="35",
                       height="35")
  
-   reload_row = div(div(div(_make_card(reload_pill,
-                                       is_free_span=True), 
+   reload_row = div(div(div(_make_card(reload_pill),
                        style="margin-top:5px;"),
                        cl="row",
                        style="margin-left:0;"),
@@ -441,10 +440,12 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
 
 
-def _make_card(display,is_free_span=None):
-  main = (div(cl="span")
-          if is_free_span is None
-          else div(cl="span"))
+def _make_card(display):
+  main = div(cl="span",
+             style="display:block;\
+                    margin-left:auto;\
+                    margin-right:auto;")
+
   d = main << table(cl="table",
                     style="background:#F1ECDE \
                           url('/static/images/card-background.png') repeat;\
