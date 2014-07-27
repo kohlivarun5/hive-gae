@@ -33,7 +33,7 @@ class Handler(webapp2.RequestHandler):
     some_time_found = False
     times_map = None
 
-    logging.error(last_creation_times)
+    logging.info(last_creation_times)
     if last_creation_times is not None and last_creation_times != "":
         times_map = json.loads(last_creation_times)
         some_time_found = True
