@@ -136,7 +136,7 @@ def make_web_card(params):
                    )
 
     d2 = a(img(src=params.photo,
-               style="max-height:490px;display:block;margin:10 auto auto auto;\
+               style="max-height:490px;display:block;margin:auto;\
                       box-shadow: 0px 0px 12px 0px #646464;",
                height="100%"))
 
@@ -150,7 +150,7 @@ def make_web_card(params):
         is_longer_than_limit = _is_longer_than_limit(params.text)
 
         d1 = d << tr()
-        d1 = d1 << td(style="padding:20px 10px 0px 10px")
+        d1 = d1 << td(style="padding:12px 10px 0px 10px")
 
         cl_prop="expandableTextBase"
         if is_longer_than_limit:
@@ -236,7 +236,9 @@ def _addClickToExpand(tag):
     color:#657b83;
     padding:2px;
     margin:0 0 0 0;
-    font-family: 'Merriweather', serif;
+    //font-weight:600;
+    font-family: 'Hind', sans-serif;
+    text-align:center;
 }
 
 .expandableText {
@@ -362,7 +364,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
                     href="/static/images/main_icon.png")
 
   page.head << link(rel="stylesheet", type='text/css',
-                    href="http://fonts.googleapis.com/css?family=Merriweather:700")
+                    href="https://fonts.googleapis.com/css?family=Hind:500")
 
   page.head << link(rel="apple-touch-icon", href="/static/images/main_icon.png")
   page.head << link(rel="shortcut icon", href="/static/images/favicon.ico")
