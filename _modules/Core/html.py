@@ -12,15 +12,18 @@ def make_home(items,root_url,is_page_request,alert=None):
 
   last_creation_time = None
 
-  for item in items:
+  service_times = {}
+  for (service,item) in items:
       last_creation_time = item.creation_time
+      service_times[service] = last_creation_time
+
       display = item.web_display(item.data,root_url)
       if display:
         d << _make_card(display)
 
   scripts = []
   if last_creation_time is not None:
-    scripts = _appendInfiniteScroll(main,d,last_creation_time,root_url)
+    scripts = _appendInfiniteScroll(main,d,service_times,root_url)
 
   if is_page_request:
       return d.render()
@@ -264,12 +267,13 @@ $("body").on('click', '.expandableTextBase', function () {
 
 LAST_CREATION_TIME_TAG='last_creation_time'
 
-def _appendInfiniteScroll(main,d,last_creation_time,root_url):
+def _appendInfiniteScroll(main,d,last_creation_times,root_url):
     _WRAPPER_ID = "infiniteCardsWrapper"
     _LAST_CREATION_TIME_ID="LAST_CREATED_DIV"
 
     jquery = r"""
 //<![CDATA[ 
+
 $(window).scroll(function() {
     if (this.params === undefined)
     {
@@ -288,56 +292,64 @@ $(window).scroll(function() {
 
         var div = $('#"""+_WRAPPER_ID+"""');
         console.log("Initiating infinite scroll");
+    
+        var times_map = {};
+        var some_time_found = false;
+        $('."""+_LAST_CREATION_TIME_ID+"""').each(function(i,e) {
+            some_time_found = true;
+            times_map[e.name] = e.value;
+        });
+            
 
-        var last_creation_time = $('#"""+_LAST_CREATION_TIME_ID+"""').val();
-        if (last_creation_time === undefined)
+        if (!some_time_found)
         { return; }
 
         $('.loadmoreajaxloaderDiv').show();
-        console.log(last_creation_time)
-        if (last_creation_time) 
-        {
-            var data = {
-                """+LAST_CREATION_TIME_TAG+""" : last_creation_time
-            };
+        console.log(times_map)
+        var data = {
+            """+LAST_CREATION_TIME_TAG+""" : JSON.stringify(times_map)
+        };
 
-            $.ajax({
-              url: '"""+root_url+"""',
-              data: data,
-              success: function(html) {
+        $.ajax({
+          url: '"""+root_url+"""',
+          data: data,
+          success: function(html) {
 
-                  params.is_loading = false;
-                  $('.loadmoreajaxloaderDiv').hide();
-                  if(html)
-                  {
-                    console.log("Got html");
-                    var before =  $(document).height();
+              params.is_loading = false;
+              $('.loadmoreajaxloaderDiv').hide();
+              if(html)
+              {
+                console.log("Got html");
+                var before =  $(document).height();
 
-                    $('#"""+_LAST_CREATION_TIME_ID+"""').remove();
-                    $('#"""+_WRAPPER_ID+"""').append(html); 
+                $('."""+_LAST_CREATION_TIME_ID+"""').each(function(){
+                    this.remove();
+                });
+                $('#"""+_WRAPPER_ID+"""').append(html); 
 
-                    var after =  $(document).height();
-                    var diff = after - before;
+                var after =  $(document).height();
+                var diff = after - before;
 
-                    params.nextUpdateLocation += diff * params.extensionFactor;
-                  }
-              },
-              error : function(){
-                  console.log("Got error");
-                  params.is_loading = true;
-                  $('.loadmoreajaxloaderDiv').hide();
+                params.nextUpdateLocation += diff * params.extensionFactor;
               }
-            });
-        }
+          },
+          error : function(){
+              console.log("Got error");
+              params.is_loading = true;
+              $('.loadmoreajaxloaderDiv').hide();
+          }
+        });
     }
 });
 //]]>  
 """
 
-    main.attributes["id"] = _WRAPPER_ID
-    d << input(type="hidden",
-               value=last_creation_time,
-               name=_LAST_CREATION_TIME_ID,id=_LAST_CREATION_TIME_ID)
+    main.attributes["id"] = _WRAPPER_ID 
+
+    for service,time in last_creation_times.iteritems():
+        d << input(cl=_LAST_CREATION_TIME_ID,type="hidden",
+                   value=time,name=service,
+                   id=_LAST_CREATION_TIME_ID)
 
 
     return [script(jquery,type="text/javascript")]
@@ -435,7 +447,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
                       width="35",
                       height="35")
  
-   reload_row = div(div(div(_make_card(reload_pill),
+   reload_row = div(div(div(_make_card(reload_pill,True),
                        style="margin-top:5px;"),
                        cl="row",
                        style="margin-left:0;"),
@@ -455,11 +467,14 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 def _get_card_background(display_config=None):
     return "'/static/images/card-background.png'"
 
-def _make_card(display):
+def _make_card(display,is_width_100=False):
   main = div(cl="span",
              style="display:block;\
                     margin-left:auto;\
                     margin-right:auto;")
+
+  if is_width_100 :
+      main.attributes['style'] += " width:100%;"
 
   d = main << table(cl="table",
                     style="background:#F1ECDE \

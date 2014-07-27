@@ -1,24 +1,24 @@
 import Gae
 import Notify
 
+import logging
+
 CONSUMERS = [
     Notify.Glass
 ]
 
 def deliver_items(
         userinfo,
-        items,
+        itemsList,
         root_url,
         is_notify,
         last_notify_time,
         update_time_callback):
 
-    items = filter(
-            lambda item:
-            item.creation_time > last_notify_time 
-            if last_notify_time is not None
-            else True,
-            items)
+    items = []
+    for item in itemsList:
+        if last_notify_time is None or item.creation_time > last_notify_time:
+            items.append(item)
 
     items = reversed(items)
 

@@ -43,7 +43,7 @@ def get_access_token_from_code(oauth_token,oauth_verifier,userinfo,root_url):
     logging.info(access_token)
     return access_token
 
-def get_items(params,offset=None):
+def get_items(params,offset=None,last_found_time=None):
 
     userinfo = params.userinfo 
     client = _client(userinfo)
@@ -63,19 +63,25 @@ def get_items(params,offset=None):
                         %  (traceback.format_exc()))
         return []
 
+    if 'posts' not in dashboard:
+        return []
+
     cards = []
 
-    if 'posts' not in dashboard:
-        return cards
-
-
     count = 0
+    found_time = None
+    logging.info(params.start_time)
+    logging.info(last_found_time)
     for post in dashboard['posts']:
       count = count + 1
       timestamp = post['timestamp']
       last_creation_time = pytz.utc.localize(datetime.datetime.fromtimestamp(timestamp))
+      logging.debug(last_creation_time)
 
-      if  params.start_time is not None and last_creation_time >= params.start_time:
+      if last_found_time is None or last_creation_time < last_found_time:
+          found_time = last_creation_time
+
+      if params.start_time is not None and last_creation_time >= params.start_time:
           continue
 
       cards.append(Core.Coretypes.Timeline_item(
@@ -84,11 +90,12 @@ def get_items(params,offset=None):
                 web_display=_card_display,
                 glass_display=_glass_display))
 
-    logging.debug(cards)
-    logging.debug(count)
+    logging.info(offset)
+    logging.info(found_time)
+    logging.info(count)
 
-    if len(cards) == 0 and count > 0:
-       return get_items(params,(offset+count if offset is not None else count))
+    if found_time and len(cards) == 0 and count > 0:
+       return get_items(params,(offset+count if offset is not None else count),found_time)
 
     return cards
 
