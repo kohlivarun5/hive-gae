@@ -112,35 +112,42 @@ def _make_activities(activities):
 
     return main
 
+import re
+def _make_poster_text(poster):
+    return "@"+re.sub(r'\s+', '', poster) 
+
 def make_web_card(params):
 
     if params is None or params.photo is None:
         return None
 
     main = article(cl='photo')
-    d = main << a()
+    d = main 
 
-    if params.poster:
-        d1 = d << p(style="margin:0 0 0 0;")
-
-        d2 = d1 << a(b(params.poster))
-        if params.poster_link:
-            d2.attributes['href'] = params.poster_link
-
-       
     d = d << table(cl="table",
                     style="\
                     table-layout:fixed;\
-                    background:#F1ECDE url('/static/images/card-background.png') repeat;\
+                    background:#F1ECDE url("+_get_card_background()+") repeat;\
                     margin-bottom:10px;\
                     ",
                    )
 
-    if params.text:
-        d1 = d << tr()
-        d1 = d1 << td(style="padding:2px 10px 2px 10px")
+    d2 = a(img(src=params.photo,
+               style="max-height:430px;display:block;margin:10 auto auto auto;\
+                      box-shadow: 0px 0px 12px 0px #646464;",
+               height="100%"))
 
+    
+    if params.post_link:
+        d2.attributes['href'] = params.post_link
+
+    d << tr(td(d2))
+
+    if params.text:
         is_longer_than_limit = _is_longer_than_limit(params.text)
+
+        d1 = d << tr()
+        d1 = d1 << td(style="padding:20px 10px 0px 10px")
 
         cl_prop="expandableTextBase"
         if is_longer_than_limit:
@@ -151,22 +158,26 @@ def make_web_card(params):
                      cl=cl_prop,
                      onClick="")
 
-    d2 = a(img(src=params.photo,
-               style="max-height:430px;display:block;margin:10 auto auto auto;\
-                      box-shadow: 0px 0px 12px 0px #646464;",
-               height="100%"))
-
-    if params.post_link:
-        d2.attributes['href'] = params.post_link
-
-    d << tr(td(d2))
     
+    bottom_div = main << div(style="clear:both;text-align:center")
+
     if params.logo:
-        main << img(style="padding-left:5px;",
-                      src=params.logo,width="20",height="20",align="left")
-    
+        bottom_div << div(img(style="padding-left:5px;",
+                              src=params.logo,width="20",height="20",align="left"),
+                          style="float:left")
+
+   
     if params.activities and len(params.activities) > 0 :
-        main << _make_activities(params.activities)
+        bottom_div << div(_make_activities(params.activities),
+                          style="display:inline-block;float:right")
+
+    if params.poster:
+        d1 = p(style="margin:0 0 0 5px;")
+        bottom_div << div(d1,style="display:inline-block;margin:0 auto;")
+
+        d2 = d1 << a(b(_make_poster_text(params.poster)))
+        if params.poster_link:
+            d2.attributes['href'] = params.poster_link
 
     return main
 
@@ -219,11 +230,10 @@ def _addClickToExpand(tag):
     display: block;
     width:100%;
     word-wrap:break-word;
-    font-size:120%;
-    font-family:monospace;
     color:#657b83;
     padding:2px;
     margin:0 0 0 0;
+    font-family: 'Merriweather', serif;
 }
 
 .expandableText {
@@ -338,6 +348,10 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
   page.head << link(rel="shortcut icon", sizes="196x196",
                     href="/static/images/main_icon.png")
+
+  page.head << link(rel="stylesheet", type='text/css',
+                    href="http://fonts.googleapis.com/css?family=Merriweather:700")
+
   page.head << link(rel="apple-touch-icon", href="/static/images/main_icon.png")
   page.head << link(rel="shortcut icon", href="/static/images/favicon.ico")
 
@@ -438,7 +452,8 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
   return page.render()
 
-
+def _get_card_background(display_config=None):
+    return "'/static/images/card-background.png'"
 
 def _make_card(display):
   main = div(cl="span",
@@ -448,7 +463,7 @@ def _make_card(display):
 
   d = main << table(cl="table",
                     style="background:#F1ECDE \
-                          url('/static/images/card-background.png') repeat;\
+                          url("+_get_card_background()+") repeat;\
                           margin-bottom:40px;\
                           box-shadow: 0px 0px 7px 0px #646464;")
 
