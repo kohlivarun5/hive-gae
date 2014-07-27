@@ -66,6 +66,12 @@ def get_items(params,until_ts=None):
                 ])
             }
 
+        if params.start_time is None:
+            request_object['limit'] = 50
+        else:
+            request_object['limit'] = 30
+
+
         if until_ts is not None:
             request_object['until'] = until_ts
 
