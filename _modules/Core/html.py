@@ -1,6 +1,7 @@
 from pyh import *
 from Core import coretypes as Coretypes
 
+import pytz
 import logging
 
 def make_home(items,root_url,is_page_request,alert=None):
@@ -119,6 +120,10 @@ import re
 def _make_poster_text(poster):
     return "@"+re.sub(r'\s+', '', poster) 
 
+_EASTERN = pytz.timezone('US/Eastern')
+def _make_time_stamp(time):
+    return time.astimezone(_EASTERN).strftime("%d %b, %I:%M %p")
+
 def make_web_card(params):
 
     if params is None or params.photo is None:
@@ -165,17 +170,30 @@ def make_web_card(params):
     bottom_div = main << div(style="clear:both;text-align:center")
 
     if params.logo:
-        bottom_div << div(img(style="padding-left:5px;",
-                              src=params.logo,width="20",height="20",align="left"),
-                          style="float:left")
+        d = div(style="display:inline-block;float:left")
+        d << img(style="padding-left:5px;",
+                 src=params.logo,width="20",height="20",align="left")
+        d << p(_make_time_stamp(params.creation_time),
+               style="float:left;\
+                      color:#657b83;\
+                      font-family: 'Hind', sans-serif;\
+                      text-align:left;\
+                      display:inline-block;\
+                      opacity:0.65;\
+                      vertical-align:middle;\
+                      font-size:80%;\
+                      padding-left:3px;\
+                      padding-top:2px;\
+                      ")
 
+        bottom_div << d
    
     if params.activities and len(params.activities) > 0 :
         bottom_div << div(_make_activities(params.activities),
                           style="display:inline-block;float:right")
 
     if params.poster:
-        d1 = p(style="margin:0 0 0 5px;")
+        d1 = p(style="margin:0 70 0 5px;")
         bottom_div << div(d1,style="display:inline-block;margin:0 auto;")
 
         d2 = d1 << a(b(_make_poster_text(params.poster)))

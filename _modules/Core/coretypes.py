@@ -36,6 +36,7 @@ Web_card_params = namedtuple("Web_card_params",[
     , 'text'
     , 'logo'
     , 'activities'
+    , 'creation_time'
 ])
 
 ##############

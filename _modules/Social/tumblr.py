@@ -55,7 +55,7 @@ def get_items(params,offset=None,last_found_time=None):
       return []
 
     try:
-        dashboard = client.dashboard(**{'offset':offset, 'type':'photo'})
+        dashboard = client.dashboard(**{'limit':2, 'offset':offset, 'type':'photo'})
         logging.debug(dashboard)
 
     except:
@@ -76,6 +76,7 @@ def get_items(params,offset=None,last_found_time=None):
       count = count + 1
       timestamp = post['timestamp']
       last_creation_time = pytz.utc.localize(datetime.datetime.fromtimestamp(timestamp))
+      post['timestamp'] = last_creation_time
       logging.debug(last_creation_time)
 
       if last_found_time is None or last_creation_time < last_found_time:
@@ -221,7 +222,8 @@ def _card_params(data,root_url):
         post_link=poster_link,
         photo=photo,
         text=text,
-        activities=_get_activities(data)
+        activities=_get_activities(data),
+        creation_time=data['timestamp']
     )
 
 

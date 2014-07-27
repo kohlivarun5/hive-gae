@@ -40,7 +40,7 @@ def _get_items_impl(params,media_id=None):
     return []
 
   logging.info(media_id)
-  media_feed, next_ptr = client.user_media_feed(max_id=media_id)
+  media_feed, next_ptr = client.user_media_feed(count=5,max_id=media_id)
 
   logging.info(media_feed)
   logging.info(next_ptr)
@@ -53,7 +53,8 @@ def _get_items_impl(params,media_id=None):
 
     next_media_id = media.id
 
-    creation_time = pytz.utc.localize(media.created_time)
+    media.created_time = pytz.utc.localize(media.created_time)
+    creation_time = media.created_time
 
     if params.start_time and creation_time >= params.start_time:
         continue
@@ -145,7 +146,8 @@ def _card_params(data,root_url):
         photo=data.get_standard_resolution_url(),
         text=(data.caption.text.encode('ascii', 'xmlcharrefreplace') 
                 if data.caption else None),
-        activities=_get_activities(data)
+        activities=_get_activities(data),
+        creation_time=data.created_time
     )
 
 def _card_display(data,root_url):

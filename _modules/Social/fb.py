@@ -87,7 +87,8 @@ def get_items(params,until_ts=None):
     last_creation_time = None
     
     for post in news_feed['data']:
-      last_creation_time = dateutil.parser.parse(post["created_time"])
+      post["created_time"] = dateutil.parser.parse(post["created_time"])
+      last_creation_time = post["created_time"]
 
       if  params.start_time is not None and last_creation_time >= params.start_time:
           continue;
@@ -199,7 +200,8 @@ def _card_params(data,root_url):
         post_link=(data['link'] if 'link' in data else None),
         photo=(data['picture'] if 'picture' in data else None),
         text=text,
-        activities=_get_activities(data)
+        activities=_get_activities(data),
+        creation_time=data['created_time']
     )
 
 
