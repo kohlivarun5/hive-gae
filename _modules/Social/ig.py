@@ -40,10 +40,12 @@ def _get_items_impl(params,media_id=None):
     return []
 
   logging.info(media_id)
-  media_feed, next_ptr = client.user_media_feed(count=5,max_id=media_id)
+
+  count = 5 if params.start_time else 1
+  media_feed, next_ptr = client.user_media_feed(count=count,max_id=media_id)
 
   logging.info(media_feed)
-  logging.info(next_ptr)
+  #logging.info(next_ptr)
 
   cards = []
 
@@ -65,13 +67,13 @@ def _get_items_impl(params,media_id=None):
       web_display=_card_display,
       glass_display=_glass_display))
 
+  logging.info(len(cards))
   if next_ptr is None or len(cards) > 0:
     return cards
 
   if len(cards) == 0:
     return _get_items_impl(params,next_media_id)
   
-  # logging.debug(cards)
   return cards
 
 

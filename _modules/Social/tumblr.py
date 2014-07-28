@@ -55,7 +55,8 @@ def get_items(params,offset=None,last_found_time=None):
       return []
 
     try:
-        dashboard = client.dashboard(**{'limit':2, 'offset':offset, 'type':'photo'})
+        limit = 2 if params.start_time else 1
+        dashboard = client.dashboard(**{'limit':limit, 'offset':offset, 'type':'photo'})
         logging.debug(dashboard)
 
     except:
@@ -98,6 +99,7 @@ def get_items(params,offset=None,last_found_time=None):
     if found_time and len(cards) == 0 and count > 0:
        return get_items(params,(offset+count if offset is not None else count),found_time)
 
+    logging.info(len(cards))
     return cards
 
 _LIKE_ACTIVITY='like'

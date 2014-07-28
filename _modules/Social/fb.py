@@ -66,7 +66,7 @@ def get_items(params,until_ts=None):
                 ])
             }
 
-        request_object['limit'] = 30
+        request_object['limit'] = 30 if params.start_time else 10
 
         if until_ts is not None:
             request_object['until'] = until_ts
@@ -105,8 +105,7 @@ def get_items(params,until_ts=None):
                 web_display=_card_display,
                 glass_display=_glass_display))
 
-    logging.debug(cards)
-
+    logging.info(len(cards))
     if len(cards) ==0 and last_creation_time is not None:
         return get_items(params,last_creation_time)
 

@@ -50,6 +50,7 @@ def get_timeline_items(userinfo,root_url,start_times):
    
     def get(svc):
         info = svc.get_service_info(userinfo,root_url)
+        logging.info("Start job for %s" % (info.name))
 
         logging.info(info.name)
         logging.info(start_times)
@@ -66,9 +67,13 @@ def get_timeline_items(userinfo,root_url,start_times):
             userinfo=userinfo,
             start_time=start_time,
             location=None)
+        logging.info("End job for %s" % (info.name))
         return (info.name,svc.get_items(params))
  
+    logging.info("Start threads with %d items" % (len(SERVICES)))
     results = Core.MtMapper.do(get,SERVICES)
+    #results = map(get,SERVICES) #Core.MtMapper.do(get,SERVICES)
+    logging.info("Sone with %d items" % (len(SERVICES)))
 
     items_map = {}
     for (service,items) in results:
