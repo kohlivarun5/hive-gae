@@ -35,7 +35,8 @@ def get_access_token_from_code(code,root_url):
     return access["access_token"]
 
 
-def get_items(params,until_ts=None):
+from httplib import HTTPException
+def get_items(params,until_ts=None,is_retry=False):
 
     userinfo = params.userinfo 
 
@@ -79,6 +80,13 @@ def get_items(params,until_ts=None):
         logging.error("Failure to get FB news feed:{%s}"
                         %  (traceback.format_exc()))
         return []
+    except HTTPException:
+        logging.error("Failure to get FB news feed:{%s}"
+                        %  (traceback.format_exc()))
+        if is_retry:
+            return []
+        else:
+            return get_items(params,until_ts,True)
 
     cards = []
 
@@ -107,7 +115,7 @@ def get_items(params,until_ts=None):
 
     logging.info(len(cards))
     if len(cards) ==0 and last_creation_time is not None:
-        return get_items(params,last_creation_time)
+        return get_items(params,last_creation_time,is_retry)
 
 
     return cards

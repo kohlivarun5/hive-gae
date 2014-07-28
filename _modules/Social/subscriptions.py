@@ -73,7 +73,7 @@ def get_timeline_items(userinfo,root_url,start_times):
     logging.info("Start threads with %d items" % (len(SERVICES)))
     results = Core.MtMapper.do(get,SERVICES)
     #results = map(get,SERVICES) #Core.MtMapper.do(get,SERVICES)
-    logging.info("Sone with %d items" % (len(SERVICES)))
+    logging.info("Done with %d items" % (len(SERVICES)))
 
     items_map = {}
     for (service,items) in results:
