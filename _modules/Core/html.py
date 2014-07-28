@@ -298,9 +298,9 @@ $(window).scroll(function() {
     if (this.params === undefined)
     {
         this.params = {};
-        this.params.extensionFactor = 0.6;
+        this.params.extensionFactor = 0.7;
         this.params.nextUpdateLocation 
-            = ($(document).height() * this.params.extensionFactor);
+            = ($(document).height() * 0.2);//this.params.extensionFactor);
         this.params.is_loading = false;
     }
 
