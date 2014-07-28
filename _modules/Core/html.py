@@ -166,7 +166,14 @@ def make_web_card(params):
                      cl=cl_prop,
                      onClick="")
 
-    
+    if params.poster:
+        d1 = p(style="margin:auto auto auto 5px;")
+        main << div(d1,style="padding:0 0 5px 25px;display:inline-block;margin:0 auto;")
+
+        d2 = d1 << a(b(_make_poster_text(params.poster)))
+        if params.poster_link:
+            d2.attributes['href'] = params.poster_link
+
     bottom_div = main << div(style="clear:both;text-align:center")
 
     if params.logo:
@@ -192,14 +199,7 @@ def make_web_card(params):
         bottom_div << div(_make_activities(params.activities),
                           style="display:inline-block;float:right")
 
-    if params.poster:
-        d1 = p(style="margin:0 70 0 5px;")
-        bottom_div << div(d1,style="display:inline-block;margin:0 auto;")
-
-        d2 = d1 << a(b(_make_poster_text(params.poster)))
-        if params.poster_link:
-            d2.attributes['href'] = params.poster_link
-
+    
     return main
 
 def make_glass_card(params):
