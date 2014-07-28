@@ -141,7 +141,7 @@ def make_web_card(params):
                    )
 
     d2 = a(img(src=params.photo,
-               style="max-height:550px;display:block;margin:auto;\
+               style="max-height:520px;display:block;margin:auto;\
                       box-shadow: 0px 0px 12px 0px #646464;",
                height="100%"))
 
