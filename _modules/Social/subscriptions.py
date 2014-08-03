@@ -3,12 +3,14 @@ import Core
 from Social import fb as Fb
 from Social import ig as Ig
 from Social import tumblr as Tumblr
+from Social import twitter as Twitter
 
 import logging
 
 SERVICES = [
     Ig,
     Fb,
+    Twitter,
     Tumblr
 ]
 
@@ -66,6 +68,7 @@ def get_timeline_items(userinfo,root_url,start_times):
         params = Core.Coretypes.Timeline_search_params(
             userinfo=userinfo,
             start_time=start_time,
+            root_url=root_url,
             location=None)
         logging.info("End job for %s" % (info.name))
         return (info.name,svc.get_items(params))
