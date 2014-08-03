@@ -14,4 +14,4 @@ def load_session_userid(request_handler):
 def store_userid(request_handler, userid):
   """Store current user's ID in session."""
   session = sessions.LilCookies(request_handler, SESSION_SECRET)
-  session.set_secure_cookie(name='userid', value=userid)
+  session.set_secure_cookie(name='userid', value=userid,expires_days=None)

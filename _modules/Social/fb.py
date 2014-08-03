@@ -15,22 +15,22 @@ CALLBACK_LINK = "/fb_oauth2callback"
 NAME="Facebook"
 
 def get_service_info(userinfo,root_url):
-  name = NAME
-  if (_client(userinfo) is None):
-    return Core.Coretypes.Login_service(
+    name = NAME
+    if (_client(userinfo) is None):
+        return Core.Coretypes.Login_service(
             name=name,
             info=Core.Coretypes.Unsubscribed(
-              login_link=(_get_auth_uri(root_url))
-              )
-           )
-  else:
-    return Core.Coretypes.Login_service(name=name, info=Core.Coretypes.Subscribed())
+                login_link=(_get_auth_uri(root_url))
+            )
+        )
+    else:
+        return Core.Coretypes.Login_service(name=name, info=Core.Coretypes.Subscribed())
 
 def get_access_token_from_code(code,root_url):
     logging.debug("Getting FB info")
     access = facebook.get_access_token_from_code(
-            code,_get_redirect_uri(root_url),
-            _APPLICATION_ID,_APPLICATION_SECRET)
+        code,_get_redirect_uri(root_url),
+        _APPLICATION_ID,_APPLICATION_SECRET)
     logging.info(access)
     return access["access_token"]
 
@@ -49,12 +49,12 @@ def get_items(params,until_ts=None,is_retry=False):
     logging.info(until_ts)
 
     if client is None:
-      return []
+        return []
 
     try:
         request_object = {
-                'fields' : 
-                ",".join([
+            'fields' : 
+            ",".join([
                 'from',
                 'link',
                 'full_picture',
@@ -64,8 +64,8 @@ def get_items(params,until_ts=None,is_retry=False):
                 'actions',
                 'likes.limit(1).summary(true)',
                 'comments.limit(1).summary(true)'
-                ])
-            }
+            ])
+        }
 
         request_object['limit'] = 30 if params.start_time else 20
 
@@ -78,11 +78,11 @@ def get_items(params,until_ts=None,is_retry=False):
 
     except facebook.GraphAPIError:
         logging.error("Failure to get FB news feed:{%s}"
-                        %  (traceback.format_exc()))
+                      %  (traceback.format_exc()))
         return []
     except HTTPException:
         logging.error("Failure to get FB news feed:{%s}"
-                        %  (traceback.format_exc()))
+                      %  (traceback.format_exc()))
         if is_retry:
             return []
         else:
@@ -93,25 +93,25 @@ def get_items(params,until_ts=None,is_retry=False):
     #logging.debug(news_feed)
 
     last_creation_time = None
-    
+
     for post in news_feed['data']:
-      post["created_time"] = dateutil.parser.parse(post["created_time"])
-      last_creation_time = post["created_time"]
+        post["created_time"] = dateutil.parser.parse(post["created_time"])
+        last_creation_time = post["created_time"]
 
       if  params.start_time is not None and last_creation_time >= params.start_time:
           continue;
+
       #if ('from' in post and 'category' in post['from']):
-      #  continue
-      if 'full_picture' in post:
-        post['picture'] = re.sub(
-               '%2F[a-z][0-9]+x[0-9]+%2F','%2F',
-               post['full_picture'].replace("_s.","_n.").replace("_t.","_n."))
+          #  continue
+        if 'full_picture' in post:
+          post['picture'] = re.sub('%2F[a-z][0-9]+x[0-9]+%2F','%2F',
+                              post['full_picture'].replace("_s.","_n.").replace("_t.","_n."))
 
       cards.append(Core.Coretypes.Timeline_item(
-                creation_time=last_creation_time,
-                data=post,
-                web_display=_card_display,
-                glass_display=_glass_display))
+          creation_time=last_creation_time,
+          data=post,
+          web_display=_card_display,
+          glass_display=_glass_display))
 
     logging.info(len(cards))
     if len(cards) ==0 and last_creation_time is not None:
@@ -148,19 +148,19 @@ def _get_redirect_uri(root_url):
     return redirect_uri
 
 def _client(userinfo):
-  if (userinfo.fb_access_token is None):
-    return None
-  else:
-    return facebook.GraphAPI(userinfo.fb_access_token)
+    if (userinfo.fb_access_token is None):
+        return None
+    else:
+        return facebook.GraphAPI(userinfo.fb_access_token)
 
 def _like_creator(parent,item):
     return Core.Html.add_activity_inputs(
-            parent,NAME,
-            (item['object_id'] if 'object_id' in item else item['id']),
-            _LIKE_ACTIVITY)
+        parent,NAME,
+        (item['object_id'] if 'object_id' in item else item['id']),
+        _LIKE_ACTIVITY)
 
 def _get_activities(data):
-    
+
     likes_link = None
     #comment_link = None
 
@@ -170,21 +170,21 @@ def _get_activities(data):
                 likes_link = _like_creator
 
             #if action['name'] == 'Comment':
-            #    comment_link = action['link']
+                #    comment_link = action['link']
 
     activities = []
-    
+
     count = 0
 
     if 'likes' in data and 'summary' in data['likes']:
-            count=data['likes']['summary']['total_count']
+        count=data['likes']['summary']['total_count']
 
     activities.append(
         Core.Coretypes.Item_activity(
-        count,
-        data=data,
-        icon="/static/images/FB-ThumbsUp_29.png",
-        link=likes_link))
+            count,
+            data=data,
+            icon="/static/images/FB-ThumbsUp_29.png",
+            link=likes_link))
 
     return activities
 
@@ -199,7 +199,7 @@ def _card_params(data,root_url):
         text = data['message'].encode('ascii', 'xmlcharrefreplace')
     elif 'description' in data:
         text = data['description'].encode('ascii', 'xmlcharrefreplace')
-    
+
     return Core.Coretypes.Web_card_params(
         logo=root_url+"/static/images/FB-f-Logo__blue_29.png",
         poster=poster,
@@ -214,7 +214,7 @@ def _card_params(data,root_url):
 
 def _card_display(data,root_url):
     return Core.Html.make_web_card(
-            _card_params(data,root_url))
+        _card_params(data,root_url))
 
 def _glass_display(data,is_notify,root_url):
     params = _card_params(data,root_url)
@@ -224,9 +224,9 @@ def _glass_display(data,is_notify,root_url):
     params = params._replace(**{'poster_link':None, 'post_link' :None})
 
     card = Glass.Card.of_params(
-            NAME,
-            params,
-            is_notify,
-            Core.Html.make_glass_card(params))
+        NAME,
+        params,
+        is_notify,
+        Core.Html.make_glass_card(params))
 
     return card
