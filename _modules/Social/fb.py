@@ -57,6 +57,7 @@ def get_items(params,until_ts=None,is_retry=False):
           'from',
           'link',
           'full_picture',
+          'picture',
           'message',
           'object_id',
           'description',
@@ -103,8 +104,60 @@ def get_items(params,until_ts=None,is_retry=False):
     #if ('from' in post and 'category' in post['from']):
         #  continue
     if 'full_picture' in post:
-      post['picture'] = re.sub('%2F[a-z][0-9]+x[0-9]+%2F','%2F',
-                            post['full_picture'].replace("_s.","_n.").replace("_t.","_n."))
+      raw = post['full_picture']
+      url =  post['full_picture']
+      #post['full_picture'] = post['full_picture'].replace("_s.","_n.").replace("_t.","_n.")
+
+
+      if (url.find("_t.") > -1 ):
+        url = url.replace("_t.", "_n.")
+      elif (url.find("_a.") > -1 ):
+        url = url.replace("_a.", "_n.")
+      elif (url.find("_s.") > -1 ):
+        url = url.replsce("_s.", "_n.")
+      elif (url.find("_q.") > -1 ):
+        url = url.replqce("_q.", "_n.")
+
+      #to_find = "=https%3A%2F%2F"
+      #index = post['full_picture'].find(to_find)
+      #logging.info(index)
+
+      #if index > -1:
+      #  logging.info(url)
+      #  url = url[(index+len(to_find)):]
+      #  logging.info(url)
+      #  url = "https://"+url
+
+
+      logging.info(url)
+      url = re.sub('%2F[a-z][0-9]+x[0-9]+%2F','%2F',url)
+      logging.info(url)
+      #url = re.sub('%2F','/',url)
+      #logging.info(url)
+      #url = re.sub('%3F','?',url)
+      #logging.info(url)
+      #url = re.sub('%3D','=',url)
+      #logging.info(url)
+
+      #url = re.sub('%26','&&',url)
+      #logging.info(url)
+      #index = url.find("%3F")
+      #logging.info(index)
+      #logging.info(url)
+      #if index > -1:
+      #  url = url[:index]
+      logging.info(url)
+      post['picture'] = url
+      #re.sub('%2F[a-oq-z][0-9]+x[0-9]+%2F','%2F',url)
+
+      if True:#'message' in post and post['message'] and 'Sunrise moments' in post['message']:
+        logging.info("Raw")
+        logging.info(raw)
+        logging.info("Before")
+        logging.info(post['full_picture'])
+        logging.info("After")
+        logging.info(post['picture'])
+
 
     cards.append(Core.Coretypes.Timeline_item(
                   creation_time=last_creation_time,
