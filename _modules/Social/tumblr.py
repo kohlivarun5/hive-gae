@@ -55,7 +55,7 @@ def get_items(params,offset=None,last_found_time=None):
       return []
 
     try:
-        limit = 2 if params.start_time else 1
+        limit = 20 if params.start_time else 10
         dashboard = client.dashboard(**{'limit':limit, 'offset':offset, 'type':'photo'})
         logging.debug(dashboard)
 

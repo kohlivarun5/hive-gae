@@ -40,7 +40,7 @@ def get_items(params,until_ts=None,is_retry=False):
   userinfo = params.userinfo 
 
   if until_ts is None and params.start_time:
-    until_ts = time.mktime(params.start_time.timetuple())
+    until_ts = params.start_time 
 
   client = _client(userinfo)
 
@@ -54,6 +54,8 @@ def get_items(params,until_ts=None,is_retry=False):
     request_object = {
       'fields' : 
         ",".join([
+          'created_time',
+          'updated_time',
           'from',
           'link',
           'full_picture',
@@ -67,10 +69,11 @@ def get_items(params,until_ts=None,is_retry=False):
         ])
     }
 
-    request_object['limit'] = 30 if params.start_time else 20
+    if params.start_time is None:
+      request_object['limit'] = 15
 
     if until_ts is not None:
-      request_object['until'] = until_ts
+      request_object['until'] = time.mktime(until_ts.timetuple())
 
     logging.info(request_object)
     news_feed = client.get_connections("me", "home",**request_object)
@@ -94,7 +97,10 @@ def get_items(params,until_ts=None,is_retry=False):
 
   for post in news_feed['data']:
     post["created_time"] = dateutil.parser.parse(post["created_time"])
-    last_creation_time = post["created_time"]
+
+    if post["created_time"] != last_creation_time:
+      if last_creation_time is None or last_creation_time > post["created_time"]:
+        last_creation_time = post["created_time"]
 
     if 'link' in post and post['link'].find("posts") > -1:
       continue
@@ -127,7 +133,8 @@ def get_items(params,until_ts=None,is_retry=False):
                   glass_display=_glass_display))
 
   logging.info(len(cards))
-  if len(cards) ==0 and last_creation_time is not None:
+  logging.info(last_creation_time)
+  if len(cards) == 0 and last_creation_time is not None and last_creation_time < until_ts:
     return get_items(params,last_creation_time,is_retry)
 
 
