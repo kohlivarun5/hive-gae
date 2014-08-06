@@ -115,9 +115,9 @@ def get_items(params,until_ts=None,is_retry=False):
       elif (url.find("_q.") > -1 ):
         url = url.replqce("_q.", "_n.")
 
-      logging.info(url)
+      logging.debug(url)
       url = re.sub('%2F[a-z][0-9]+x[0-9]+%2F','%2F',url)
-      logging.info(url)
+      logging.debug(url)
       post['picture'] = url
 
     cards.append(Core.Coretypes.Timeline_item(

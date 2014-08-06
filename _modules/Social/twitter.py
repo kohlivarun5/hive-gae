@@ -56,7 +56,7 @@ def get_items(params,max_id=None,max_id_time=None):
     return []
 
   try:
-    count = 20 if params.start_time else 10
+    count = 30 if params.start_time else 20
     dashboard = client.home_timeline(count=count,max_id=max_id)
     logging.debug(dashboard)
 

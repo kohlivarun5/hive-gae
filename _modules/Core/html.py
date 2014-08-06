@@ -254,7 +254,6 @@ def _addClickToExpand(tag):
     color:#657b83;
     padding:2px;
     margin:0 0 0 0;
-    //font-weight:600;
     font-family: 'Hind', sans-serif;
     text-align:center;
 }
@@ -280,6 +279,7 @@ $("body").on('click', '.expandableTextBase', function () {
     $(this).toggleClass("expandableText");
     $(this).toggleClass("expandedText");
 });
+
 //]]>  
 """
 
@@ -293,8 +293,21 @@ def _appendInfiniteScroll(main,d,last_creation_times,root_url):
 
     jquery = r"""
 //<![CDATA[ 
+// Hide the small images
+$(window).load(function() {
+
+  $("div#singleCard").each(function() {
+  
+    if ( $(this).height() < 180) 
+    {
+       $(this).remove();
+    }
+  });
+
+});
 
 $(window).scroll(function() {
+
     if (this.params === undefined)
     {
         this.params = {};
@@ -304,13 +317,13 @@ $(window).scroll(function() {
         this.params.is_loading = false;
     }
 
-    var params = this.params;
+    if(this.params.is_loading || $(window).scrollTop() < this.params.nextUpdateLocation)
+    { return; }
 
-    if(!params.is_loading && $(window).scrollTop() > params.nextUpdateLocation)
+    var params = this.params;
     {
         params.is_loading = true;
 
-        var div = $('#"""+_WRAPPER_ID+"""');
         console.log("Initiating infinite scroll");
     
         var times_map = {};
@@ -345,12 +358,19 @@ $(window).scroll(function() {
                 $('."""+_LAST_CREATION_TIME_ID+"""').each(function(){
                     this.remove();
                 });
-                $('#"""+_WRAPPER_ID+"""').append(html); 
+
+                // Hide the small images
+                $('#"""+_WRAPPER_ID+"""').append(html).waitForImages(function() {
+                   $("div#singleCard").each(function() {
+                     if ( $(this).height() < 180) 
+                     { $(this).remove(); }
+                   });
+                });; 
 
                 var after =  $(document).height();
                 var diff = after - before;
 
-                params.nextUpdateLocation += diff * params.extensionFactor;
+                params.nextUpdateLocation += (diff * params.extensionFactor);
               }
           },
           error : function(){
@@ -399,7 +419,8 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
   _addJS(page.body,
       '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
-      '/static/bootstrap/js/bootstrap.min.js'
+      '/static/bootstrap/js/bootstrap.min.js',
+      'http://cdnjs.cloudflare.com/ajax/libs/jquery.waitforimages/1.5.0/jquery.waitforimages.min.js'
       )
 
   css_style = """
@@ -495,6 +516,9 @@ def _make_card(display,is_width_100=False):
 
   if is_width_100 :
       main.attributes['style'] += " width:100%;"
+  else:
+      main.attributes["id"] = "singleCard"
+
 
   d = main << table(cl="table",
                     style="background:#F1ECDE \
