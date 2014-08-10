@@ -12,6 +12,7 @@ Timeline_search_params = namedtuple('Timeline_search_params', [
       'userinfo'
     , 'location'
     , 'start_time'
+    , 'root_url'
 ])
 
 Timeline_item = namedtuple("Timeline_item", [

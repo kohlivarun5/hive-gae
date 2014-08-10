@@ -38,7 +38,7 @@ class GapiCallbackHandler(webapp2.RequestHandler):
     userinfo = Gae.Userinfo.get(userid)
 
     # Decide what to show based on subscriptions
-    subscriptions = Social.Subscriptions.get_subscriptions(userinfo,root_url)
+    subscriptions = Social.Subscriptions.get_subscriptions(userinfo,root_url,Gae.Userinfo.put)
     is_new_user = True
     for sub in subscriptions:
         if type(sub.info) is Core.Coretypes.Subscribed:
@@ -53,7 +53,7 @@ class GapiCallbackHandler(webapp2.RequestHandler):
 import Subscriptions
 def _render_after_subscription(self,userinfo,root_url,alert):
 
-    if Social.Subscriptions.has_all_subscriptions(userinfo,root_url):
+    if Social.Subscriptions.has_all_subscriptions(userinfo,root_url,Gae.Userinfo.put):
         self.redirect('/')
     else:
         self.response.out.write(
@@ -134,3 +134,30 @@ class TumblrCallbackHandler(webapp2.RequestHandler):
     
     _render_after_subscription(self,userinfo,root_url,
             "Subscribed to Tumblr!")
+
+
+class TwitterCallbackHandler(webapp2.RequestHandler):
+  """Callback called by twitter authentication"""
+
+  def get(self):
+    """Get the user's oauth info"""
+
+    oauth_token = self.request.get("oauth_token")
+    oauth_verifier = self.request.get("oauth_verifier")
+
+    userid = Core.Session.load_session_userid(self)
+    userinfo = Gae.Userinfo.get(userid)
+    assert userinfo is not None
+
+    root_url = Apputil.Url.get_root_url(self)
+    access_token = Social.Twitter.get_access_token_from_code(oauth_token,
+                                                             oauth_verifier,
+                                                             userinfo,root_url)
+
+    logging.info(access_token)
+    userinfo.twitter_oauth_token =  access_token['oauth_token']
+    userinfo.twitter_oauth_secret = access_token['oauth_token_secret']
+    Gae.Userinfo.put(userinfo)
+    
+    _render_after_subscription(self,userinfo,root_url,
+            "Subscribed to Twitter!")

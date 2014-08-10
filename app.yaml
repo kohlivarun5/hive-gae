@@ -7,6 +7,10 @@ threadsafe: true
 builtins:
 - deferred: on
 
+libraries:
+- name: ssl
+  version: latest
+
 handlers:
 - url: /google7e073e6fd0855e04.html
   static_files: static/google7e073e6fd0855e04.html 

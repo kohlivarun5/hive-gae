@@ -1,7 +1,6 @@
 import pytumblr
 
 import Core
-import Gae
 import Glass 
 
 import logging
@@ -18,19 +17,19 @@ CALLBACK_LINK = "/tumblr_oauth2callback"
 
 NAME="Tumblr"
 
-def get_service_info(userinfo,root_url):
+def get_service_info(userinfo,root_url,userinfo_saver):
   name = NAME
   if (_client(userinfo) is None):
     return Core.Coretypes.Login_service(
             name=name,
             info=Core.Coretypes.Unsubscribed(
-              login_link=(_get_auth_uri(root_url,userinfo))
+              login_link=(_get_auth_uri(root_url,userinfo,userinfo_saver))
               )
            )
   else:
     return Core.Coretypes.Login_service(name=name, info=Core.Coretypes.Subscribed())
 
-def get_access_token_from_code(oauth_token,oauth_verifier,userinfo,root_url):
+def get_access_token_from_code(oauth_token,oauth_verifier,userinfo,_):
 
     token = oauth2.Token(oauth_token,userinfo.tumblr_request_secret)
     token.set_verifier(oauth_verifier)
@@ -55,7 +54,7 @@ def get_items(params,offset=None,last_found_time=None):
       return []
 
     try:
-        limit = 2 if params.start_time else 1
+        limit = 10 if params.start_time else 5
         dashboard = client.dashboard(**{'limit':limit, 'offset':offset, 'type':'photo'})
         logging.debug(dashboard)
 
@@ -104,14 +103,15 @@ def get_items(params,offset=None,last_found_time=None):
 
 _LIKE_ACTIVITY='like'
 
+from collections import namedtuple
 def _json_object_hook(d): return namedtuple('X', d.keys())(*d.values())
 def _json2obj(data): return json.loads(data.replace('\"','"'), object_hook=_json_object_hook)
 
-def apply_activity(userinfo,item,activity,_):
-    logging.info(item)
+def apply_activity(userinfo,raw,activity,_):
+    logging.info(raw)
 
     client = _client(userinfo)
-    data = _json2obj(item)
+    item = _json2obj(raw)
     if activity == _LIKE_ACTIVITY:
         client.like(item.id,item.reblog_key)
 
@@ -131,7 +131,7 @@ _ACCESS_TOKEN_URL = 'http://www.tumblr.com/oauth/access_token'
 def _get_consumer():
     return oauth2.Consumer(_APPLICATION_ID, _APPLICATION_SECRET)
 
-def _get_auth_uri(root_url,userinfo):
+def _get_auth_uri(_,userinfo,userinfo_saver):
 
     client = oauth2.Client(_get_consumer())
     resp, content = client.request(_REQUEST_TOKEN_URL, "GET")
@@ -142,7 +142,7 @@ def _get_auth_uri(root_url,userinfo):
 
     userinfo.tumblr_request_token = request_token['oauth_token']
     userinfo.tumblr_request_secret = request_token['oauth_token_secret']
-    Gae.Userinfo.put(userinfo)
+    userinfo_saver(userinfo)
 
     return auth_url
 

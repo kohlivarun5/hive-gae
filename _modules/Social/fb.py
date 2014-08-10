@@ -14,7 +14,7 @@ CALLBACK_LINK = "/fb_oauth2callback"
 
 NAME="Facebook"
 
-def get_service_info(userinfo,root_url):
+def get_service_info(userinfo,root_url,_):
   name = NAME
   if (_client(userinfo) is None):
     return Core.Coretypes.Login_service(
@@ -40,7 +40,7 @@ def get_items(params,until_ts=None,is_retry=False):
   userinfo = params.userinfo 
 
   if until_ts is None and params.start_time:
-    until_ts = time.mktime(params.start_time.timetuple())
+    until_ts = params.start_time 
 
   client = _client(userinfo)
 
@@ -54,9 +54,12 @@ def get_items(params,until_ts=None,is_retry=False):
     request_object = {
       'fields' : 
         ",".join([
+          'created_time',
+          'updated_time',
           'from',
           'link',
           'full_picture',
+          'picture',
           'message',
           'object_id',
           'description',
@@ -66,10 +69,11 @@ def get_items(params,until_ts=None,is_retry=False):
         ])
     }
 
-    request_object['limit'] = 30 if params.start_time else 20
+    if params.start_time is None:
+      request_object['limit'] = 15
 
     if until_ts is not None:
-      request_object['until'] = until_ts
+      request_object['until'] = time.mktime(until_ts.timetuple())
 
     logging.info(request_object)
     news_feed = client.get_connections("me", "home",**request_object)
@@ -89,22 +93,37 @@ def get_items(params,until_ts=None,is_retry=False):
 
   cards = []
 
-  #logging.debug(news_feed)
-
   last_creation_time = None
 
   for post in news_feed['data']:
     post["created_time"] = dateutil.parser.parse(post["created_time"])
-    last_creation_time = post["created_time"]
+
+    if post["created_time"] != last_creation_time:
+      if last_creation_time is None or last_creation_time > post["created_time"]:
+        last_creation_time = post["created_time"]
+
+    if 'link' in post and post['link'].find("posts") > -1:
+      continue
 
     if  params.start_time is not None and last_creation_time >= params.start_time:
-      continue;
+      continue
 
-    #if ('from' in post and 'category' in post['from']):
-        #  continue
     if 'full_picture' in post:
-      post['picture'] = re.sub('%2F[a-z][0-9]+x[0-9]+%2F','%2F',
-                            post['full_picture'].replace("_s.","_n.").replace("_t.","_n."))
+      url =  post['full_picture']
+
+      if (url.find("_t.") > -1 ):
+        url = url.replace("_t.", "_n.")
+      elif (url.find("_a.") > -1 ):
+        url = url.replace("_a.", "_n.")
+      elif (url.find("_s.") > -1 ):
+        url = url.replsce("_s.", "_n.")
+      elif (url.find("_q.") > -1 ):
+        url = url.replqce("_q.", "_n.")
+
+      logging.debug(url)
+      url = re.sub('%2F[a-z][0-9]+x[0-9]+%2F','%2F',url)
+      logging.debug(url)
+      post['picture'] = url
 
     cards.append(Core.Coretypes.Timeline_item(
                   creation_time=last_creation_time,
@@ -113,7 +132,8 @@ def get_items(params,until_ts=None,is_retry=False):
                   glass_display=_glass_display))
 
   logging.info(len(cards))
-  if len(cards) ==0 and last_creation_time is not None:
+  logging.info(last_creation_time)
+  if len(cards) == 0 and last_creation_time is not None and last_creation_time < until_ts:
     return get_items(params,last_creation_time,is_retry)
 
 

@@ -11,7 +11,7 @@ CALLBACK_LINK = "/ig_oauth2callback"
 
 NAME = "Instagram"
 
-def get_service_info(userinfo,root_url):
+def get_service_info(userinfo,root_url,_):
   name = NAME
   if (_client(userinfo) is None):
     return Core.Coretypes.Login_service(
@@ -41,7 +41,7 @@ def _get_items_impl(params,media_id=None):
 
   logging.info(media_id)
 
-  count = 5 if params.start_time else 1
+  count = 7 if params.start_time else 3
   media_feed, next_ptr = client.user_media_feed(count=count,max_id=media_id)
 
   logging.info(media_feed)

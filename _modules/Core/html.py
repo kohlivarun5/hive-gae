@@ -141,8 +141,13 @@ def make_web_card(params):
                    )
 
     d2 = a(img(src=params.photo,
-               style="max-height:520px;display:block;margin:auto;\
-                      box-shadow: 0px 0px 12px 0px #646464;",
+               style="max-height:420px;\
+                      display:block;margin:auto;\
+                      box-shadow: 0px 0px 5px 0px #646464;\
+                      -webkit-border-radius: 4 !important;\
+                      -moz-border-radius: 4 !important;\
+                      border-radius: 4 !important;\
+                     ",
                height="100%"))
 
     
@@ -254,7 +259,6 @@ def _addClickToExpand(tag):
     color:#657b83;
     padding:2px;
     margin:0 0 0 0;
-    //font-weight:600;
     font-family: 'Hind', sans-serif;
     text-align:center;
 }
@@ -280,6 +284,7 @@ $("body").on('click', '.expandableTextBase', function () {
     $(this).toggleClass("expandableText");
     $(this).toggleClass("expandedText");
 });
+
 //]]>  
 """
 
@@ -293,8 +298,21 @@ def _appendInfiniteScroll(main,d,last_creation_times,root_url):
 
     jquery = r"""
 //<![CDATA[ 
+// Hide the small images
+$(window).load(function() {
+
+  $("div#singleCard").each(function() {
+  
+    if ( $(this).height() < 180) 
+    {
+       $(this).remove();
+    }
+  });
+
+});
 
 $(window).scroll(function() {
+
     if (this.params === undefined)
     {
         this.params = {};
@@ -304,13 +322,13 @@ $(window).scroll(function() {
         this.params.is_loading = false;
     }
 
-    var params = this.params;
+    if(this.params.is_loading || $(window).scrollTop() < this.params.nextUpdateLocation)
+    { return; }
 
-    if(!params.is_loading && $(window).scrollTop() > params.nextUpdateLocation)
+    var params = this.params;
     {
         params.is_loading = true;
 
-        var div = $('#"""+_WRAPPER_ID+"""');
         console.log("Initiating infinite scroll");
     
         var times_map = {};
@@ -335,7 +353,6 @@ $(window).scroll(function() {
           data: data,
           success: function(html) {
 
-              params.is_loading = false;
               $('.loadmoreajaxloaderDiv').hide();
               if(html)
               {
@@ -345,12 +362,19 @@ $(window).scroll(function() {
                 $('."""+_LAST_CREATION_TIME_ID+"""').each(function(){
                     this.remove();
                 });
-                $('#"""+_WRAPPER_ID+"""').append(html); 
 
-                var after =  $(document).height();
-                var diff = after - before;
+                // Hide the small images
+                $('#"""+_WRAPPER_ID+"""').append(html).waitForImages(function() {
+                   $("div#singleCard").each(function() {
+                     if ( $(this).height() < 180) 
+                     { $(this).remove(); }
+                   });
+                   var after =  $(document).height();
+                   var diff = after - before;
+                   params.nextUpdateLocation += (diff * params.extensionFactor);
+                   params.is_loading = false;
+                });; 
 
-                params.nextUpdateLocation += diff * params.extensionFactor;
               }
           },
           error : function(){
@@ -399,15 +423,11 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
   _addJS(page.body,
       '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
-      '/static/bootstrap/js/bootstrap.min.js'
+      '/static/bootstrap/js/bootstrap.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/jquery.waitforimages/1.5.0/jquery.waitforimages.min.js'
       )
 
   css_style = """
-* {
-  -webkit-border-radius: 0 !important;
-     -moz-border-radius: 0 !important;
-          border-radius: 0 !important;
-}
 .table td {
   border-top:0px;
 }
@@ -489,18 +509,23 @@ def _get_card_background(display_config=None):
 
 def _make_card(display,is_width_100=False):
   main = div(cl="span",
-             style="display:block;\
-                    margin-left:auto;\
-                    margin-right:auto;")
+             style="display:inline-block;\
+             ")
 
   if is_width_100 :
       main.attributes['style'] += " width:100%;"
+  else:
+      main.attributes["id"] = "singleCard"
+
 
   d = main << table(cl="table",
                     style="background:#F1ECDE \
                           url("+_get_card_background()+") repeat;\
                           margin-bottom:40px;\
-                          box-shadow: 0px 0px 7px 0px #646464;")
+                          -webkit-border-radius: 4 !important;\
+                          -moz-border-radius: 4 !important;\
+                          border-radius: 4 !important;\
+                          box-shadow: 0px 0px 3px 0px #646464;")
 
   d = d << tr()
   d = d << td(display,style="padding:10px")
