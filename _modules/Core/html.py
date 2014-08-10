@@ -285,7 +285,7 @@ def _addClickToExpand(tag):
 }
 
 .expandableText {
-    max-height:58px;
+    max-height:50px;
     margin-bottom:10px;
     text-align:start;
 
