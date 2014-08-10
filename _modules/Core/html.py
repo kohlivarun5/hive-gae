@@ -64,7 +64,7 @@ def make_subscriptions(subscriptions,alert=None):
 
   return _make_page(Coretypes.PAGE_TAB.Subscriptions,divs,[],alert)
 
-_MAX_TEXT_LENGTH = 80 #Unix !
+_MAX_TEXT_LENGTH = 50 #Unix !
 _ELIPSES = " ..."
 
 def _is_longer_than_limit(text):
@@ -76,7 +76,7 @@ def _is_longer_than_limit(text):
 #        return text
 #
 #    # Text is greater than length, first we split words, then traverse
-#    # THe first word do exceed limit is dropped and we put elipses and return!
+#    # The first word do exceed limit is dropped and we put elipses and return!
 #    words = text.split()
 #    text = ""
 #    for word in words:
@@ -117,8 +117,25 @@ def _make_activities(activities):
     return main
 
 import re
+poster_regex = re.compile(r'\s+')
+poster_sub = ''
+
+long_word_regex = re.compile(r'(#\w\w+)')
+long_word_sub = r'&shy;\1&shy;'
+
+url_sub = r'<a href="\1">\1</a>'
+
+urlfinder = re.compile('(http:\/\/\S+)')
+urlfinder2 = re.compile('(https:\/\/\S+)')
+def _urlify_markdown(value):
+  value = urlfinder.sub(r'<a href=\1><img style="height:30px;" src="/static/images/url_link_icon3.png"</img></a>', value)
+  return urlfinder2.sub(r'<a href=\1><img style="height:30px;" src="/static/images/url_link_icon3.png"</img></a>', value)
+
+def _long_word_break(value):
+  return long_word_regex.sub(long_word_sub,value)
+
 def _make_poster_text(poster):
-    return "@"+re.sub(r'\s+', '', poster) 
+    return "@"+poster_regex.sub(poster_sub, poster) 
 
 _EASTERN = pytz.timezone('US/Eastern')
 def _make_time_stamp(time):
@@ -129,21 +146,20 @@ def make_web_card(params):
     if params is None or params.photo is None:
         return None
 
-    main = article(cl='photo')
+    main = div()
+    
     d = main 
 
-    d = d << table(cl="table",
+    d = d << div(cl="table",
                     style="\
                     table-layout:fixed;\
                     background:#F1ECDE url("+_get_card_background()+") repeat;\
-                    margin-bottom:10px;\
+                    margin: 0 auto 0 auto;\
                     ",
                    )
 
     d2 = a(img(src=params.photo,
-               style="max-height:420px;\
-                      display:block;margin:auto;\
-                      box-shadow: 0px 0px 5px 0px #646464;\
+               style="box-shadow: 0px 0px 5px 0px #646464;\
                       -webkit-border-radius: 4 !important;\
                       -moz-border-radius: 4 !important;\
                       border-radius: 4 !important;\
@@ -153,23 +169,26 @@ def make_web_card(params):
     
     if params.post_link:
         d2.attributes['href'] = params.post_link
-
-    d << tr(td(d2))
+    
+    figure_div = div(cl="image",style="max-height:520px;")
+    figure_div << div(d2,style="margin-bottom:12px",id="singleCardImage")
 
     if params.text:
         is_longer_than_limit = _is_longer_than_limit(params.text)
 
-        d1 = d << tr()
-        d1 = d1 << td(style="padding:12px 10px 0px 10px")
+        d1 = figure_div << div(cl="caption",style="padding:0px 10px 0px 10px")
 
         cl_prop="expandableTextBase"
         if is_longer_than_limit:
             cl_prop += " expandableText"
 
 
-        d1 = d1 << p(params.text,
+        d1 = d1 << p(_long_word_break(_urlify_markdown(params.text)),
                      cl=cl_prop,
                      onClick="")
+
+    d << figure_div
+
 
     if params.poster:
         d1 = p(style="margin:auto auto auto 5px;")
@@ -196,6 +215,7 @@ def make_web_card(params):
                       font-size:80%;\
                       padding-left:3px;\
                       padding-top:2px;\
+                      margin:0;\
                       ")
 
         bottom_div << d
@@ -260,13 +280,15 @@ def _addClickToExpand(tag):
     padding:2px;
     margin:0 0 0 0;
     font-family: 'Hind', sans-serif;
+    overflow: scroll;
     text-align:center;
 }
 
 .expandableText {
-    white-space: nowrap;
-    overflow: hidden;
-    margin:0 0 5px 0;
+    max-height:58px;
+    margin-bottom:10px;
+    text-align:start;
+
 }
 
 .loadmoreajaxloaderDiv {
@@ -277,18 +299,6 @@ def _addClickToExpand(tag):
 """
 
     tag += style(css_style,type="text/css")
-
-    js_script = r"""
-//<![CDATA[ 
-$("body").on('click', '.expandableTextBase', function () {
-    $(this).toggleClass("expandableText");
-    $(this).toggleClass("expandedText");
-});
-
-//]]>  
-"""
-
-    tag += script(js_script,type="text/javascript")
 
 LAST_CREATION_TIME_TAG='last_creation_time'
 
@@ -301,11 +311,20 @@ def _appendInfiniteScroll(main,d,last_creation_times,root_url):
 // Hide the small images
 $(window).load(function() {
 
-  $("div#singleCard").each(function() {
+  $("div#singleCardImage").each(function() {
   
     if ( $(this).height() < 180) 
     {
-       $(this).remove();
+       $(this).parent()
+              .parent()
+              .parent()
+              .parent()
+              .parent()
+              .parent()
+              .parent()
+              .parent()
+              .parent()
+              .remove();
     }
   });
 
@@ -365,9 +384,20 @@ $(window).scroll(function() {
 
                 // Hide the small images
                 $('#"""+_WRAPPER_ID+"""').append(html).waitForImages(function() {
-                   $("div#singleCard").each(function() {
-                     if ( $(this).height() < 180) 
-                     { $(this).remove(); }
+                   $("div#singleCardImage").each(function() {
+                    if ( $(this).height() < 180) 
+                    {
+                       $(this).parent()
+                              .parent()
+                              .parent()
+                              .parent()
+                              .parent()
+                              .parent()
+                              .parent()
+                              .parent()
+                              .parent()
+                              .remove();
+                    }
                    });
                    var after =  $(document).height();
                    var diff = after - before;
@@ -421,12 +451,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
       '/static/main.css')
 
 
-  _addJS(page.body,
-      '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
-      '/static/bootstrap/js/bootstrap.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/jquery.waitforimages/1.5.0/jquery.waitforimages.min.js'
-      )
-
+ 
   css_style = """
 .table td {
   border-top:0px;
@@ -439,6 +464,10 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 .p {
   margin:0 0 0 0;
 }
+
+.image{ display:table }
+.image div.caption{ display:table-caption;caption-side:bottom; }
+
 
 """
 
@@ -481,26 +510,31 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
   if addLoader:
  
-   reload_pill = img(cl="loadmoreajaxloader",
+    reload_pill = img(cl="loadmoreajaxloader",
                       style="display:block;margin:auto",
                       src="/static/images/ajax-loader.gif",
                       width="35",
                       height="35")
  
-   reload_row = div(div(div(_make_card(reload_pill,True),
+    reload_row = div(div(div(_make_card(reload_pill,True),
                        style="margin-top:5px;"),
                        cl="row",
                        style="margin-left:0;"),
                     cl="container loadmoreajaxloaderDiv")
 
 
-   page.body << reload_row
-
+    page.body << reload_row
 
   _addClickToExpand(page.body)
 
+  _addJS(page.body,
+      '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
+      '/static/bootstrap/js/bootstrap.min.js',
+      '//cdnjs.cloudflare.com/ajax/libs/jquery.waitforimages/1.5.0/jquery.waitforimages.min.js'
+      )
+
   for script in scripts:
-      page.body << script
+    page.body << script 
 
   return page.render()
 
@@ -508,9 +542,8 @@ def _get_card_background(display_config=None):
     return "'/static/images/card-background.png'"
 
 def _make_card(display,is_width_100=False):
-  main = div(cl="span",
-             style="display:inline-block;\
-             ")
+  main1 = div(cl="row",style="text-align:center")
+  main = main1 << div(style="display:inline-block;margin:0 auto 0 auto;")
 
   if is_width_100 :
       main.attributes['style'] += " width:100%;"
@@ -528,9 +561,9 @@ def _make_card(display,is_width_100=False):
                           box-shadow: 0px 0px 3px 0px #646464;")
 
   d = d << tr()
-  d = d << td(display,style="padding:10px")
+  d = d << td(display,style="padding:8px")
 
-  return main 
+  return main1
 
 def add_activity_inputs(parent,name,item,activity):
 
@@ -538,3 +571,6 @@ def add_activity_inputs(parent,name,item,activity):
     parent << input(type="hidden", name="item", value=item)
     parent << input(type="hidden", name="activity", value=activity)
     return parent
+
+
+
