@@ -2,6 +2,8 @@ import Oauth
 import Social
 import Core
 
+import Gae
+
 import Apputil
 
 import webapp2
@@ -23,5 +25,5 @@ import Core
 from Core import Coretypes
 
 def render_page(userinfo,root_url,alert=None):
-  subscriptions = Social.Subscriptions.get_subscriptions(userinfo,root_url)
+  subscriptions = Social.Subscriptions.get_subscriptions(userinfo,root_url,Gae.Userinfo.put)
   return Core.Html.make_subscriptions(subscriptions,alert)

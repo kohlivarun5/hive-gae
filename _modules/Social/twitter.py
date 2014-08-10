@@ -1,7 +1,6 @@
 import tweepy
 
 import Core
-import Gae
 import Glass 
 
 import logging
@@ -12,26 +11,25 @@ import oauth2
 import urlparse
  
 import pytz
-import datetime
 
 
 CALLBACK_LINK = "/twitter_oauth2callback"
 
 NAME="Twitter"
 
-def get_service_info(userinfo,root_url):
+def get_service_info(userinfo,root_url,userinfo_saver):
   name = NAME
   if (_client(userinfo,root_url) is None):
     return Core.Coretypes.Login_service(
             name=name,
             info=Core.Coretypes.Unsubscribed(
-              login_link=(_get_auth_uri(root_url,userinfo))
+              login_link=(_get_auth_uri(root_url,userinfo,userinfo_saver))
               )
            )
   else:
     return Core.Coretypes.Login_service(name=name, info=Core.Coretypes.Subscribed())
 
-def get_access_token_from_code(oauth_token,oauth_verifier,userinfo,root_url):
+def get_access_token_from_code(oauth_token,oauth_verifier,userinfo,_):
   token = oauth2.Token(oauth_token,userinfo.twitter_request_secret)
   token.set_verifier(oauth_verifier)
 
@@ -77,9 +75,9 @@ def get_items(params,max_id=None,max_id_time=None):
     count = count + 1
     post.created_at =  pytz.utc.localize(post.created_at)
     last_creation_time = post.created_at
-    id = post.id
+    identity = post.id
     if max_id_time is None or last_creation_time < max_id_time:
-      found_id = id
+      found_id = identity
       found_time = last_creation_time
 
     if params.start_time is not None and last_creation_time >= params.start_time:
@@ -112,14 +110,15 @@ def get_items(params,max_id=None,max_id_time=None):
 
 _LIKE_ACTIVITY='like'
 
+from collections import namedtuple
 def _json_object_hook(d): return namedtuple('X', d.keys())(*d.values())
 def _json2obj(data): return json.loads(data.replace('\"','"'), object_hook=_json_object_hook)
 
-def apply_activity(userinfo,item,activity,_):
-    logging.info(item)
+def apply_activity(userinfo,raw,activity,root_url):
+    logging.info(raw)
 
-    client = _client(userinfo)
-    data = _json2obj(item)
+    client = _client(userinfo,root_url)
+    item = _json2obj(raw)
     if activity == _LIKE_ACTIVITY:
         client.like(item.id,item.reblog_key)
 
@@ -133,8 +132,6 @@ _APPLICATION_ID="wVNq8OD84WGCU4ly3wzeg"
 _APPLICATION_SECRET = "mhJMASHpNvbQUco9vIB8Eo04fzR9nQ7LCf5nH4dcHw"
 
 
-_REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token'
-_AUTHORIZATION_URL = 'https://api.twitter.com/oauth/authorize'
 _ACCESS_TOKEN_URL = 'https://api.twitter.com/oauth/access_token'
 
 def _get_auth(root_url):
@@ -145,7 +142,7 @@ def _get_auth(root_url):
 def _get_consumer():
   return oauth2.Consumer(_APPLICATION_ID, _APPLICATION_SECRET)
 
-def _get_auth_uri(root_url,userinfo):
+def _get_auth_uri(root_url,userinfo,userinfo_saver):
 
   logging.info("Getting twitter auth uri")
 
@@ -153,9 +150,9 @@ def _get_auth_uri(root_url,userinfo):
   uri = tweepy_auth.get_authorization_url()
   request_token = tweepy_auth.request_token
 
-  userinfo.twitter_request_token = tweepy_auth.request_token.key
-  userinfo.twitter_request_secret = tweepy_auth.request_token.secret
-  Gae.Userinfo.put(userinfo)
+  userinfo.twitter_request_token = request_token.key
+  userinfo.twitter_request_secret = request_token.secret
+  userinfo_saver(userinfo)
   return uri
 
 def _get_redirect_uri(root_url):
@@ -185,7 +182,7 @@ def _like_creator(parent,item):
             j,
             _LIKE_ACTIVITY)
 
-def _get_activities(data):
+def _get_activities(_):
   return []
   """
   likes_link = None

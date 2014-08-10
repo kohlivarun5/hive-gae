@@ -14,14 +14,14 @@ SERVICES = [
     Tumblr
 ]
 
-def get_subscriptions(userinfo,root_url):
+def get_subscriptions(userinfo,root_url,userinfo_saver):
 
   return map (
           lambda (info,svc): info,
-      _get_subscriptions(userinfo,root_url))
+      _get_subscriptions(userinfo,root_url,userinfo_saver))
 
-def has_some_subscription(userinfo,root_url):
-    subscriptions = get_subscriptions(userinfo,root_url)
+def has_some_subscription(userinfo,root_url,userinfo_saver):
+    subscriptions = get_subscriptions(userinfo,root_url,userinfo_saver)
     
     has_some_subscription = reduce(
             (lambda acc,service:
@@ -31,8 +31,8 @@ def has_some_subscription(userinfo,root_url):
 
     return has_some_subscription
     
-def has_all_subscriptions(userinfo,root_url):
-    subscriptions = get_subscriptions(userinfo,root_url)
+def has_all_subscriptions(userinfo,root_url,userinfo_saver):
+    subscriptions = get_subscriptions(userinfo,root_url,userinfo_saver)
     
     has_all_subscriptions = reduce(
             (lambda acc,service:
@@ -44,14 +44,14 @@ def has_all_subscriptions(userinfo,root_url):
 
 
 from collections import OrderedDict
-def get_timeline_items(userinfo,root_url,start_times):
+def get_timeline_items(userinfo,root_url,start_times,userinfo_saver):
 
     items_map = {}
 
     logging.info(start_times)
    
     def get(svc):
-        info = svc.get_service_info(userinfo,root_url)
+        info = svc.get_service_info(userinfo,root_url,userinfo_saver)
         logging.info("Start job for %s" % (info.name))
 
         logging.info(info.name)
@@ -100,16 +100,16 @@ def get_timeline_items(userinfo,root_url,start_times):
     items.reverse()
     return items 
 
-def apply_activity(userinfo,root_url,svc_name,item,activity,activity_data):
-    services = _get_subscriptions(userinfo,root_url)
+def apply_activity(userinfo,root_url,svc_name,item,activity,activity_data,userinfo_saver):
+    services = _get_subscriptions(userinfo,root_url,userinfo_saver)
 
     for (info,service) in services:
         if info.name == svc_name:
             service.apply_activity(userinfo,item,activity,activity_data)
             return
 
-def _get_subscriptions(userinfo,root_url):
+def _get_subscriptions(userinfo,root_url,userinfo_saver):
   return map (
       lambda service:
-        (service.get_service_info(userinfo,root_url),service),
+        (service.get_service_info(userinfo,root_url,userinfo_saver),service),
       SERVICES)

@@ -1,5 +1,3 @@
-import Social
-
 def deliver_items(userinfo,items,is_notify,service_builder,root_url):
 
     cards = map(lambda item:

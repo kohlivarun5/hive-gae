@@ -141,8 +141,13 @@ def make_web_card(params):
                    )
 
     d2 = a(img(src=params.photo,
-               style="max-height:520px;display:block;margin:auto;\
-                      box-shadow: 0px 0px 12px 0px #646464;",
+               style="max-height:420px;\
+                      display:block;margin:auto;\
+                      box-shadow: 0px 0px 5px 0px #646464;\
+                      -webkit-border-radius: 4 !important;\
+                      -moz-border-radius: 4 !important;\
+                      border-radius: 4 !important;\
+                     ",
                height="100%"))
 
     
@@ -348,7 +353,6 @@ $(window).scroll(function() {
           data: data,
           success: function(html) {
 
-              params.is_loading = false;
               $('.loadmoreajaxloaderDiv').hide();
               if(html)
               {
@@ -365,12 +369,12 @@ $(window).scroll(function() {
                      if ( $(this).height() < 180) 
                      { $(this).remove(); }
                    });
+                   var after =  $(document).height();
+                   var diff = after - before;
+                   params.nextUpdateLocation += (diff * params.extensionFactor);
+                   params.is_loading = false;
                 });; 
 
-                var after =  $(document).height();
-                var diff = after - before;
-
-                params.nextUpdateLocation += (diff * params.extensionFactor);
               }
           },
           error : function(){
@@ -420,15 +424,10 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
   _addJS(page.body,
       '//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js',
       '/static/bootstrap/js/bootstrap.min.js',
-      'http://cdnjs.cloudflare.com/ajax/libs/jquery.waitforimages/1.5.0/jquery.waitforimages.min.js'
+      'https://cdnjs.cloudflare.com/ajax/libs/jquery.waitforimages/1.5.0/jquery.waitforimages.min.js'
       )
 
   css_style = """
-* {
-  -webkit-border-radius: 0 !important;
-     -moz-border-radius: 0 !important;
-          border-radius: 0 !important;
-}
 .table td {
   border-top:0px;
 }
@@ -510,9 +509,8 @@ def _get_card_background(display_config=None):
 
 def _make_card(display,is_width_100=False):
   main = div(cl="span",
-             style="display:block;\
-                    margin-left:auto;\
-                    margin-right:auto;")
+             style="display:inline-block;\
+             ")
 
   if is_width_100 :
       main.attributes['style'] += " width:100%;"
@@ -524,7 +522,10 @@ def _make_card(display,is_width_100=False):
                     style="background:#F1ECDE \
                           url("+_get_card_background()+") repeat;\
                           margin-bottom:40px;\
-                          box-shadow: 0px 0px 7px 0px #646464;")
+                          -webkit-border-radius: 4 !important;\
+                          -moz-border-radius: 4 !important;\
+                          border-radius: 4 !important;\
+                          box-shadow: 0px 0px 3px 0px #646464;")
 
   d = d << tr()
   d = d << td(display,style="padding:10px")

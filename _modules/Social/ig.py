@@ -11,7 +11,7 @@ CALLBACK_LINK = "/ig_oauth2callback"
 
 NAME = "Instagram"
 
-def get_service_info(userinfo,root_url):
+def get_service_info(userinfo,root_url,_):
   name = NAME
   if (_client(userinfo) is None):
     return Core.Coretypes.Login_service(

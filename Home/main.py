@@ -47,9 +47,9 @@ class Handler(webapp2.RequestHandler):
     userinfo = Apputil.Userinfo.get_from_request_safe(self)
     root_url = Apputil.Url.get_root_url(self)
 
-    has_all_subs = Social.Subscriptions.has_all_subscriptions(userinfo,root_url)
+    has_all_subs = Social.Subscriptions.has_all_subscriptions(userinfo,root_url,Gae.Userinfo.put)
 
-    if has_all_subs or Social.Subscriptions.has_some_subscription(userinfo,root_url):
+    if has_all_subs or Social.Subscriptions.has_some_subscription(userinfo,root_url,Gae.Userinfo.put):
 
         html,items = _render_page(userinfo,root_url,times_map,some_time_found)
         self.response.out.write(html)
@@ -84,13 +84,13 @@ class Handler(webapp2.RequestHandler):
     root_url = Apputil.Url.get_root_url(self)
 
     Social.Subscriptions.apply_activity(
-      userinfo,root_url,svc_name,item,activity,activity_data)
+      userinfo,root_url,svc_name,item,activity,activity_data,Gae.Userinfo.put)
     self.redirect('/')
 
 ########## PRIVATES ##################
 import Core
 def _render_page(userinfo,root_url,start_times,some_time_found):
-  items = Social.Subscriptions.get_timeline_items(userinfo,root_url,start_times)
+  items = Social.Subscriptions.get_timeline_items(userinfo,root_url,start_times,Gae.Userinfo.put)
   items_array = []
   for svc,item in items:
       items_array.append(item)

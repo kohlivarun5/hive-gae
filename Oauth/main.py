@@ -38,7 +38,7 @@ class GapiCallbackHandler(webapp2.RequestHandler):
     userinfo = Gae.Userinfo.get(userid)
 
     # Decide what to show based on subscriptions
-    subscriptions = Social.Subscriptions.get_subscriptions(userinfo,root_url)
+    subscriptions = Social.Subscriptions.get_subscriptions(userinfo,root_url,Gae.Userinfo.put)
     is_new_user = True
     for sub in subscriptions:
         if type(sub.info) is Core.Coretypes.Subscribed:
@@ -53,7 +53,7 @@ class GapiCallbackHandler(webapp2.RequestHandler):
 import Subscriptions
 def _render_after_subscription(self,userinfo,root_url,alert):
 
-    if Social.Subscriptions.has_all_subscriptions(userinfo,root_url):
+    if Social.Subscriptions.has_all_subscriptions(userinfo,root_url,Gae.Userinfo.put):
         self.redirect('/')
     else:
         self.response.out.write(

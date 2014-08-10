@@ -14,7 +14,7 @@ CALLBACK_LINK = "/fb_oauth2callback"
 
 NAME="Facebook"
 
-def get_service_info(userinfo,root_url):
+def get_service_info(userinfo,root_url,_):
   name = NAME
   if (_client(userinfo) is None):
     return Core.Coretypes.Login_service(
@@ -109,7 +109,6 @@ def get_items(params,until_ts=None,is_retry=False):
       continue
 
     if 'full_picture' in post:
-      raw = post['full_picture']
       url =  post['full_picture']
 
       if (url.find("_t.") > -1 ):
