@@ -128,8 +128,8 @@ url_sub = r'<a href="\1">\1</a>'
 urlfinder = re.compile('(http:\/\/\S+)')
 urlfinder2 = re.compile('(https:\/\/\S+)')
 def _urlify_markdown(value):
-  value = urlfinder.sub(r'<a href=\1><img style="height:30px;" src="/static/images/url_link_icon3.png"</img></a>', value)
-  return urlfinder2.sub(r'<a href=\1><img style="height:30px;" src="/static/images/url_link_icon3.png"</img></a>', value)
+  value = urlfinder.sub(r'<a href=\1><img style="height:30px;" src="/static/images/url_link_icon.png"</img></a>', value)
+  return urlfinder2.sub(r'<a href=\1><img style="height:30px;" src="/static/images/url_link_icon.png"</img></a>', value)
 
 def _long_word_break(value):
   return long_word_regex.sub(long_word_sub,value)
@@ -554,7 +554,7 @@ def _make_card(display,is_width_100=False):
   d = main << table(cl="table",
                     style="background:#F1ECDE \
                           url("+_get_card_background()+") repeat;\
-                          margin-bottom:40px;\
+                          margin-bottom:30px;\
                           -webkit-border-radius: 4 !important;\
                           -moz-border-radius: 4 !important;\
                           border-radius: 4 !important;\
