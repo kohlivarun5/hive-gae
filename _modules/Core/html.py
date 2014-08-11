@@ -100,10 +100,12 @@ def _make_activities(activities):
         if activity.link:
             d = d << form(action=ACTIVITY_POST_ROUTE,
                           method="post")
-            d << input(type="image",src=activity.icon,
-                       width="20",height="20",
-                       style="padding-right:2px",
-                       alt=activity.count)
+
+            d << img(activity.count,cl="activity_div",
+                     width="20",height="20",
+                     style="padding-right:2px;",
+                     src=activity.icon)
+
             activity.link(d,activity.data)
 
         else:
@@ -163,6 +165,7 @@ def make_web_card(params):
                       -webkit-border-radius: 4 !important;\
                       -moz-border-radius: 4 !important;\
                       border-radius: 4 !important;\
+                      max-height:500px;\
                      ",
                height="100%"))
 
@@ -170,7 +173,7 @@ def make_web_card(params):
     if params.post_link:
         d2.attributes['href'] = params.post_link
     
-    figure_div = div(cl="image",style="max-height:520px;")
+    figure_div = div(cl="image")
     figure_div << div(d2,style="margin-bottom:12px",id="singleCardImage")
 
     if params.text:
@@ -286,7 +289,7 @@ def _addClickToExpand(tag):
 
 .expandableText {
     max-height:50px;
-    margin-bottom:10px;
+    margin-bottom:15px;
     text-align:start;
 
 }
@@ -533,8 +536,39 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
       '//cdnjs.cloudflare.com/ajax/libs/jquery.waitforimages/1.5.0/jquery.waitforimages.min.js'
       )
 
-  for script in scripts:
-    page.body << script 
+  for s in scripts:
+    page.body << s
+  
+  activity_post_js = r"""
+//<![CDATA[ 
+$("body").on('click', '.activity_div', function () {
+
+  var data = {};
+  $(this).parent().children('input').each(function(i,item) { 
+    data[item.name] = item.value;
+  });
+
+  console.log(data);
+
+  $.post( $(this).parent().activity, data);
+
+  var updated = 0;
+  $(this).parent().children('b').each(function(i) { 
+    $(this).text(parseInt($(this).text()) + 1);
+    updated = updated + 1;
+  });
+
+  if(0 === updated)
+  {
+    $(this).parent().append("<b style='vertical-align:middle;color:#073642'>1</b>");
+  }
+
+  $(this).removeClass('activity_div');
+
+});
+//]]>  
+"""
+  page.body << script(activity_post_js,type="text/javascript")
 
   return page.render()
 
