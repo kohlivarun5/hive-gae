@@ -69,11 +69,19 @@ class Handler(webapp2.RequestHandler):
 
   @Apputil.Oauth.auth_required
   def post(self):
+
+    logging.info(self.request)
+    logging.info(self.request.body)
+
     data = self.request
 
     svc_name  = data.get('service')
     item      = data.get('item')
     activity  = data.get('activity')
+
+    logging.info(svc_name)
+    logging.info(item)
+    logging.info(activity)
 
     try:
         activity_data = data.get('data') 
@@ -85,7 +93,6 @@ class Handler(webapp2.RequestHandler):
 
     Social.Subscriptions.apply_activity(
       userinfo,root_url,svc_name,item,activity,activity_data,Gae.Userinfo.put)
-    self.redirect('/')
 
 ########## PRIVATES ##################
 import Core
@@ -95,5 +102,6 @@ def _render_page(userinfo,root_url,start_times,some_time_found):
   for svc,item in items:
       items_array.append(item)
   return (Core.Html.make_home(items,root_url,some_time_found),items_array)
+
 
 
