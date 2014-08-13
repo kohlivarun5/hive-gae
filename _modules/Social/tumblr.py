@@ -54,7 +54,7 @@ def get_items(params,offset=None,last_found_time=None):
       return []
 
     try:
-        limit = 10 if params.start_time else 5
+        limit = 10 if params.start_time else 3
         dashboard = client.dashboard(**{'limit':limit, 'offset':offset, 'type':'photo'})
         logging.debug(dashboard)
 
@@ -214,15 +214,15 @@ def _card_params(data,root_url):
     
     photo = None
     if 'photos' in data and len(data['photos']) > 0:
-        photo = data['photos'][0]['original_size']['url']
-
+      photo = map(lambda x: x['original_size']['url'],
+                  data['photos'])
 
     return Core.Coretypes.Web_card_params(
         logo=root_url+"/static/images/tumblr_logo_white_blue_32.png",
         poster=poster,
         poster_link=poster_link,
         post_link=poster_link,
-        photo=photo,
+        photos=photo,
         text=text,
         activities=_get_activities(data),
         creation_time=data['timestamp']

@@ -71,6 +71,8 @@ def get_items(params,until_ts=None,is_retry=False):
 
     if params.start_time is None:
       request_object['limit'] = 15
+    else:
+      request_object['limit'] = 30
 
     if until_ts is not None:
       request_object['until'] = time.mktime(until_ts.timetuple())
@@ -222,7 +224,7 @@ def _card_params(data,root_url):
     poster=poster,
     poster_link=poster_link,
     post_link=(data['link'] if 'link' in data else None),
-    photo=(data['picture'] if 'picture' in data else None),
+    photos=([data['picture']] if 'picture' in data else None),
     text=text,
     activities=_get_activities(data),
     creation_time=data['created_time']
