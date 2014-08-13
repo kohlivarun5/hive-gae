@@ -213,19 +213,22 @@ def _card_params(data,root_url):
   poster = data.user.screen_name.encode('ascii', 'xmlcharrefreplace')
   poster_link = None
 
+  logging.info(data.text)
   text = data.text.encode('ascii', 'xmlcharrefreplace')
-    
+  logging.info(text)
   assert  'extended_entities' in data._json and \
           'media' in data._json['extended_entities']
   photo = None 
-  photo = data._json['extended_entities']['media'][0]['media_url']
+
+  photo = map(lambda x:x['media_url'],
+              data._json['extended_entities']['media'])
 
   return Core.Coretypes.Web_card_params(
         logo=root_url+"/static/images/Twitter_logo_blue.png",
         poster=poster,
         poster_link=poster_link,
         post_link=data._json['extended_entities']['media'][0]['url'],
-        photo=photo,
+        photos=photo,
         text=text,
         activities=_get_activities(data),
         creation_time=data.created_at

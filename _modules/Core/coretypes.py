@@ -33,7 +33,7 @@ Web_card_params = namedtuple("Web_card_params",[
       'poster'
     , 'poster_link'
     , 'post_link'
-    , 'photo'
+    , 'photos'
     , 'text'
     , 'logo'
     , 'activities'

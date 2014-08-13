@@ -122,7 +122,7 @@ import re
 poster_regex = re.compile(r'\s+')
 poster_sub = ''
 
-long_word_regex = re.compile(r'(#\w\w+)')
+long_word_regex = re.compile(r'((?<!&)#\w\w+)')
 long_word_sub = r'&shy;\1&shy;'
 
 url_sub = r'<a href="\1">\1</a>'
@@ -145,7 +145,7 @@ def _make_time_stamp(time):
 
 def make_web_card(params):
 
-    if params is None or params.photo is None:
+    if params is None or params.photos is None or (len(params.photos) < 1):
         return None
 
     main = div()
@@ -159,19 +159,37 @@ def make_web_card(params):
                     margin: 0 auto 0 auto;\
                     ",
                    )
+    d2 = div()
 
-    d2 = a(img(src=params.photo,
+    more_than_one_pic = (len(params.photos) > 1)
+    radius_style = "border-radius:4 !important;\
+                    -webkit-border-radius: 4 !important;\
+                    -moz-border-radius: 4 !important;"
+
+    if more_than_one_pic:
+      d2 = div(style="overflow-x: scroll; overflow-y: hidden;\
+                      -webkit-overflow-scrolling:touch;\
+                      "+radius_style+"\
+                      box-shadow: 0px 0px 5px 0px #646464;\
+                      background-color:#93a1a1;\
+                      padding:15px 3px 15px 3px;\
+                      white-space: nowrap;")
+
+    for photo in params.photos:
+      pic = a(img(src=photo,
                style="box-shadow: 0px 0px 5px 0px #646464;\
-                      -webkit-border-radius: 4 !important;\
-                      -moz-border-radius: 4 !important;\
-                      border-radius: 4 !important;\
                       max-height:500px;\
-                     ",
-               height="100%"))
+                     "+(radius_style if not more_than_one_pic else ""),
+               height=("100%" if not more_than_one_pic else "90%")),
+              style="display: inline-block; vertical-align: middle;")
+      if more_than_one_pic:
+        pic.attributes["style"] += " margin:0 3px 0 3px;"
 
-    
-    if params.post_link:
-        d2.attributes['href'] = params.post_link
+      if params.post_link:
+          pic.attributes['href'] = params.post_link
+
+      d2 << pic
+
     
     figure_div = div(cl="image")
     figure_div << div(d2,style="margin-bottom:12px",id="singleCardImage")
@@ -179,11 +197,12 @@ def make_web_card(params):
     if params.text:
         is_longer_than_limit = _is_longer_than_limit(params.text)
 
-        d1 = figure_div << div(cl="caption",style="padding:0px 10px 0px 10px")
+        d1 = figure_div << div(cl="caption",style="padding:0px 10px 0px 10px;")
 
         cl_prop="expandableTextBase"
         if is_longer_than_limit:
             cl_prop += " expandableText"
+            d1.attributes["style"] += " margin-bottom:10px;"
 
 
         d1 = d1 << p(_long_word_break(_urlify_markdown(params.text)),
@@ -231,11 +250,11 @@ def make_web_card(params):
     return main
 
 def make_glass_card(params):
-    if params is None or params.photo is None:
+    if params is None or params.photos is None or len(params.photos) < 1:
         return None
 
     main = article(cl='photo')
-    main << img(src=params.photo,
+    main << img(src=params.photos[0],
                 style="display:block;margin:auto;",
                 height="100%")
 
@@ -284,12 +303,12 @@ def _addClickToExpand(tag):
     margin:0 0 0 0;
     font-family: 'Hind', sans-serif;
     overflow: scroll;
+    -webkit-overflow-scrolling:touch;\
     text-align:center;
 }
 
 .expandableText {
-    max-height:50px;
-    margin-bottom:15px;
+    max-height:70px;
     text-align:start;
 
 }

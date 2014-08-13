@@ -145,7 +145,7 @@ def _card_params(data,root_url):
         poster=poster,
         poster_link=poster_link,
         post_link=data.link,
-        photo=data.get_standard_resolution_url(),
+        photos=[data.get_standard_resolution_url()],
         text=(data.caption.text.encode('ascii', 'xmlcharrefreplace') 
                 if data.caption else None),
         activities=_get_activities(data),
