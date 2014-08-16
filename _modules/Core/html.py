@@ -335,7 +335,7 @@ $(window).load(function() {
 
   $("div#singleCardImage").each(function() {
   
-    if ( $(this).height() < 180) 
+    if ( $(this).height() < 50) 
     {
        $(this).parent()
               .parent()
@@ -407,7 +407,7 @@ $(window).scroll(function() {
                 // Hide the small images
                 $('#"""+_WRAPPER_ID+"""').append(html).waitForImages(function() {
                    $("div#singleCardImage").each(function() {
-                    if ( $(this).height() < 180) 
+                    if ( $(this).height() < 50) 
                     {
                        $(this).parent()
                               .parent()
