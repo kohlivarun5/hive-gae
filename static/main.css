@@ -17,3 +17,13 @@ table td form, table td input[type='text'], table td button {
 img.button-icon {
     width: 60px;
 }
+
+.brand {
+    color:#eee8d5 !important;
+    font-family: 'Hind', sans-serif;
+
+}
+
+.navbar-inverse .navbar-inner {
+    background-image: linear-gradient(to bottom,#073642,#002b36) !important;
+}

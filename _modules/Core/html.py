@@ -108,7 +108,7 @@ def _make_activities(activities):
 
             activity.link(d,activity.data)
 
-        else:
+        elif activity.count > 0:
             d << img(activity.count,width="20",height="20",
                      style="padding-right:2px;",
                      src=activity.icon)
@@ -171,15 +171,15 @@ def make_web_card(params):
                       -webkit-overflow-scrolling:touch;\
                       "+radius_style+"\
                       box-shadow: 0px 0px 5px 0px #646464;\
-                      background-color:#93a1a1;\
+                      background-color:#6A868E;\
                       padding:15px 3px 15px 3px;\
                       white-space: nowrap;")
 
     for photo in params.photos:
       pic = a(img(src=photo,
                style="box-shadow: 0px 0px 5px 0px #646464;\
-                      max-height:500px;\
-                     "+(radius_style if not more_than_one_pic else ""),
+                      max-height:450px;\
+                     "+(radius_style),
                height=("100%" if not more_than_one_pic else "90%")),
               style="display: inline-block; vertical-align: middle;")
       if more_than_one_pic:
@@ -335,7 +335,7 @@ $(window).load(function() {
 
   $("div#singleCardImage").each(function() {
   
-    if ( $(this).height() < 50) 
+    if ( $(this).height() < 100) 
     {
        $(this).parent()
               .parent()
@@ -407,7 +407,7 @@ $(window).scroll(function() {
                 // Hide the small images
                 $('#"""+_WRAPPER_ID+"""').append(html).waitForImages(function() {
                    $("div#singleCardImage").each(function() {
-                    if ( $(this).height() < 50) 
+                    if ( $(this).height() < 100) 
                     {
                        $(this).parent()
                               .parent()
@@ -452,7 +452,7 @@ $(window).scroll(function() {
 
 
 def _make_page(tab,divs,scripts,alert=None,addLoader=False):
-  page = PyH('{Hive}')
+  page = PyH('{hive}')
 
   page.head << link(rel="shortcut icon", sizes="196x196",
                     href="/static/images/main_icon.png")
@@ -509,7 +509,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
   def _make_navbar():
     main = div(cl="navbar navbar-inverse navbar-fixed-top")
     navbar = ((main << div(cl="navbar-inner")) << div(cl="container-fluid"))
-    navbar << a((b("{Hive}") + " : " + i("Your social hub")),
+    navbar << a((b(i("{ hive }")) + " : " + ("Social hub")),
                  cl="brand", href="/",style="padding-right:1cm;")
   
     navbar << div(a("Subscriptions",
@@ -624,6 +624,7 @@ def add_activity_inputs(parent,name,item,activity):
     parent << input(type="hidden", name="item", value=item)
     parent << input(type="hidden", name="activity", value=activity)
     return parent
+
 
 
 

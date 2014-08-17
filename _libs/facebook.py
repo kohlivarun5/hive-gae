@@ -211,7 +211,7 @@ class GraphAPI(object):
         }
         post_args.update(kwargs)
         content_type, body = self._encode_multipart_form(post_args)
-        req = urllib2.Request(("https://graph.facebook.com/%s/photos" %
+        req = urllib2.Request(("https://graph.facebook.com/v2.1/%s/photos" %
                                object_id),
                               data=body)
         req.add_header('Content-Type', content_type)
@@ -291,7 +291,7 @@ class GraphAPI(object):
                 args["access_token"] = self.access_token
         post_data = None if post_args is None else urllib.urlencode(post_args)
         try:
-            file = urllib2.urlopen("https://graph.facebook.com/" + path + "?" +
+            file = urllib2.urlopen("https://graph.facebook.com/v2.1/" + path + "?" +
                     urllib.urlencode(args), post_data, timeout=self.timeout)
         except urllib2.HTTPError, e:
             response = _parse_json(e.read())
@@ -300,7 +300,7 @@ class GraphAPI(object):
             # Timeout support for Python <2.6
             if self.timeout:
                 socket.setdefaulttimeout(self.timeout)
-            file = urllib2.urlopen("https://graph.facebook.com/" + path + "?" +
+            file = urllib2.urlopen("https://graph.facebook.com/v2.1/" + path + "?" +
                                     urllib.urlencode(args), post_data)
         try:
             fileInfo = file.info()
