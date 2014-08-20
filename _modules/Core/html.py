@@ -495,7 +495,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
   page.head << style(css_style,type="text/css")
   
-  page.body.attributes["style"] = "background-color:#dedede"
+  page.body.attributes["style"] = "padding-left:10px;padding-right:10px;background-color:#dedede"
 
   def _create_tab(name,link,is_active):
     tab = li(a(name,href=link))
@@ -508,7 +508,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
   def _make_navbar():
     main = div(cl="navbar navbar-inverse navbar-fixed-top")
-    navbar = ((main << div(cl="navbar-inner")) << div(cl="container-fluid"))
+    navbar = ((main << div(cl="navbar-inner",style="padding-left:20px;padding-right:10px;")) << div(cl="container-fluid"))
     navbar << a((b(i("{ hive }")) + " : " + ("Social hub")),
                  cl="brand", href="/",style="padding-right:1cm;")
   
