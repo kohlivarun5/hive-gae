@@ -507,7 +507,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
 
 
   def _make_navbar():
-    main = div(cl="navbar navbar-inverse navbar-fixed-top")
+    main = div(cl="navbar navbar-inverse navbar-fixed-top",style="margin-right: -10px;")
     navbar = ((main << div(cl="navbar-inner",style="padding-left:20px;padding-right:10px;")) << div(cl="container-fluid"))
     navbar << a((b(i("{ hive }")) + " : " + ("Social hub")),
                  cl="brand", href="/",style="padding-right:1cm;")
