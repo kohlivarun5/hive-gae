@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 
+ComingSoon    = namedtuple('ComingSoon', [])
 Subscribed    = namedtuple('Subscribed', [])
 Unsubscribed  = namedtuple('Unsubscribed',['login_link'])
 Login_service = namedtuple('Login_service',['name','info'])

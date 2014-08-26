@@ -45,7 +45,12 @@ def make_subscriptions(subscriptions,alert=None):
 
     d = row << td(colspan="4", align="justify")
 
-    if type(service.info) is Coretypes.Subscribed:
+    if type(service.info) is Coretypes.ComingSoon:
+      d << button((service.name+" is coming soon!"),
+                   cl="btn btn-block btn-btn-default",
+                   disabled="",type='submit')
+
+    elif type(service.info) is Coretypes.Subscribed:
       d << button(("Already subscribed to "+service.name),
                    cl="btn btn-block btn-danger", 
                    disabled="",type='submit')
@@ -525,7 +530,7 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
                                 max-width:750px;")
 
   if alert:
-    data_div << div(alert,cl="alert alert-info")
+    data_div << div(alert,cl="alert alert-success")
 
   if divs:
     map(lambda d: data_div << d, divs)

@@ -15,16 +15,20 @@ CALLBACK_LINK = "/fb_oauth2callback"
 NAME="Facebook"
 
 def get_service_info(userinfo,root_url,_):
-  name = NAME
-  if (_client(userinfo) is None):
-    return Core.Coretypes.Login_service(
-            name=name,
-            info=Core.Coretypes.Unsubscribed(
-              login_link=(_get_auth_uri(root_url))
-            )
-           )
-  else:
-    return Core.Coretypes.Login_service(name=name, info=Core.Coretypes.Subscribed())
+  return Core.Coretypes.Login_service(
+    name=NAME, info=Core.Coretypes.ComingSoon())
+
+  #name = NAME
+  #if (_client(userinfo) is None):
+  #  return Core.Coretypes.Login_service(
+  #          name=name,
+  #          info=Core.Coretypes.Unsubscribed(
+  #            login_link=(_get_auth_uri(root_url))
+  #          )
+  #         )
+  #else:
+  #  return Core.Coretypes.Login_service(name=name,
+  #                 info=Core.Coretypes.Subscribed())
 
 def get_access_token_from_code(code,root_url):
   logging.debug("Getting FB info")

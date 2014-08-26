@@ -9,9 +9,9 @@ import logging
 
 SERVICES = [
     Ig,
-    Fb,
     Twitter,
-    Tumblr
+    Tumblr,
+    Fb,
 ]
 
 def get_subscriptions(userinfo,root_url,userinfo_saver):
