@@ -469,8 +469,8 @@ def _make_page(tab,divs,scripts,alert=None,addLoader=False):
   page.head << link(rel="shortcut icon", href="/static/images/favicon.ico")
 
   page.head << meta(name="mobile-web-app-capable", content="yes")
-  page.head << meta(name="viewport", content="width=device-width, initial-scale=1.0")
-  page.head << meta(name="viewport", content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, minimal-ui")
+  page.head << meta(name="viewport", content="user-scalable=no, width=device-width, minimal-ui")
+
 
   _addCSS(page.head,
       '/static/bootstrap/css/bootstrap.min.css',

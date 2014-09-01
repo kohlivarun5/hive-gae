@@ -20,12 +20,16 @@ NAME="Twitter"
 def get_service_info(userinfo,root_url,userinfo_saver):
   name = NAME
   if (_client(userinfo,root_url) is None):
-    return Core.Coretypes.Login_service(
+    try:
+      return Core.Coretypes.Login_service(
             name=name,
             info=Core.Coretypes.Unsubscribed(
               login_link=(_get_auth_uri(root_url,userinfo,userinfo_saver))
               )
            )
+    except:
+      return Core.Coretypes.Login_service(
+        name=NAME, info=Core.Coretypes.ComingSoon())
   else:
     return Core.Coretypes.Login_service(name=name, info=Core.Coretypes.Subscribed())
 
